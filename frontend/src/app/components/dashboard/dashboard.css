@@ -1,0 +1,122 @@
+/* Estructura Base */
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Barra Superior */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1e293b;
+  color: white;
+  padding: 10px 20px;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: none; /* Escondido en PC */
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.logout-btn {
+  background-color: #ef4444;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Contenedor Inferior */
+.main-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Menú Lateral (Desktop por defecto) */
+.sidebar {
+  width: 240px;
+  background-color: #0f172a;
+  color: #94a3b8;
+  transition: all 0.3s ease;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar a {
+  display: block;
+  padding: 15px 20px;
+  color: #cbd5e1;
+  text-decoration: none;
+  border-left: 4px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.sidebar a:hover, .sidebar a.active {
+  background-color: #1e293b;
+  color: white;
+  border-left-color: #3b82f6;
+}
+
+/* Área de contenido de las pantallas */
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8fafc;
+}
+
+/* =======================================================
+   RESPONSIVE: DISPOSITIVOS MÓVILES (Celulares y Tablets)
+   ======================================================= */
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block; /* Aparece el botón de hamburguesa */
+  }
+
+  .sidebar {
+    position: absolute;
+    left: -240px; /* Escondido fuera de la pantalla a la izquierda */
+    top: 0;
+    bottom: 0;
+    z-index: 99;
+    box-shadow: 2px 0px 10px rgba(0,0,0,0.3);
+  }
+
+  /* Cuando tiene la clase .abierto se desliza hacia adentro */
+  .sidebar.abierto {
+    left: 0;
+  }
+
+  /* Capa oscura detrás del menú */
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 98;
+  }
+}

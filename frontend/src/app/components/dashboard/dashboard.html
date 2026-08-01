@@ -1,0 +1,37 @@
+<div class="dashboard-layout">
+  
+  <header class="topbar">
+    <button class="hamburger-btn" (click)="toggleMenu()">☰</button>
+    <div class="logo">Mi Sistema Enterprise</div>
+    <button class="logout-btn" (click)="logout()">🔒 Salir</button>
+  </header>
+
+  <div class="main-container">
+    <nav class="sidebar" [class.abierto]="menuAbierto">
+      <ul>
+        <li>
+          <a routerLink="personas" routerLinkActive="active" (click)="cerrarMenuMovil()">👤 Personas</a>
+        </li>
+        <li>
+          <a routerLink="facturas" routerLinkActive="active" (click)="cerrarMenuMovil()">🧾 Facturas</a>
+        </li>
+        <li>
+          <a routerLink="inventario" routerLinkActive="active" (click)="cerrarMenuMovil()">📦 Inventario</a>
+        </li>
+        <li>
+          <a routerLink="consultas" routerLinkActive="active" (click)="cerrarMenuMovil()">🔍 Consultas</a>
+        </li>
+        <li>
+          <a routerLink="configuracion" routerLinkActive="active" (click)="cerrarMenuMovil()">⚙️ Configuración</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="overlay" *ngIf="menuAbierto" (click)="toggleMenu()"></div>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>
