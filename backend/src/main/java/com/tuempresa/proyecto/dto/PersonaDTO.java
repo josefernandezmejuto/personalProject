@@ -1,6 +1,8 @@
 package com.tuempresa.proyecto.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class PersonaDTO {
 
@@ -15,11 +17,24 @@ public class PersonaDTO {
     @NotBlank(message = "Los apellidos son obligatorios")
     private String apellidos;
 
+    @NotBlank(message = "El email es obligatorio")
     private String email;
-    private String telefono;
+
+    @NotBlank(message = "El teléfono celular es obligatorio")
+    private String telefonoCelular;
+
+    @NotBlank(message = "El teléfono fijo es obligatorio")
+    private String telefonoFijo;
+
+    @NotNull(message = "El estado es obligatorio") // 👈 Cambiado a @NotNull
     private Boolean activo;
 
-    public PersonaDTO() {}
+    @Valid // 👈 Valida los campos de la dirección anidada
+    @NotNull(message = "La dirección es obligatoria")
+    private DireccionDTO direccion; // 👈 Cambiado a un objeto DireccionDTO
+
+    public PersonaDTO() {
+    }
 
     // Getters y Setters
     public Long getId() { return id; }
@@ -37,9 +52,15 @@ public class PersonaDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public String getTelefonoCelular() { return telefonoCelular; }
+    public void setTelefonoCelular(String telefonoCelular) { this.telefonoCelular = telefonoCelular; }
+
+    public String getTelefonoFijo() { return telefonoFijo; }
+    public void setTelefonoFijo(String telefonoFijo) { this.telefonoFijo = telefonoFijo; }
 
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    public DireccionDTO getDireccion() { return direccion; }
+    public void setDireccion(DireccionDTO direccion) { this.direccion = direccion; }
 }

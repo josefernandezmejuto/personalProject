@@ -1,249 +1,330 @@
-<div class="container" style="padding: 20px; font-family: sans-serif">
-  <div class="form-container" style="background: #f4f6f9; padding: 20px; margin-bottom: 30px; border-radius: 8px">
-    <h3>{{ editandoId ? '📝 Editar Persona' : '👤 Añadir Nueva Persona' }}</h3>
+<div class="personas-container">
+  <!-- Tarjeta Principal Agrupada -->
+  <div class="card-panel">
+    <!-- Título Formulario -->
+    <h3 class="card-title">
+      <i class="bi" [ngClass]="editandoId ? 'bi-pencil-square' : 'bi-person-plus-fill'"></i>
+      {{ editandoId ? 'Editar Persona' : 'Añadir Nueva Persona' }}
+    </h3>
 
-    <form [formGroup]="personaForm" (ngSubmit)="guardarPersona()">
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px">
+    <form [formGroup]="personaForm" (ngSubmit)="guardarPersona($event)">
+      <!-- Primera Fila Inputs -->
+      <div class="grid-3-cols mb-2">
         <div>
-          <input type="text" formControlName="nombre" placeholder="Nombre *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="personaForm.get('nombre')?.touched && personaForm.get('nombre')?.errors"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('nombre')?.hasError('required')">El nombre es obligatorio.</small>
-            <small *ngIf="personaForm.get('nombre')?.hasError('pattern')">Solo se permiten letras y espacios.</small>
+          <input type="text" formControlName="nombre" class="form-control" placeholder="Nombre *" />
+          <div
+            *ngIf="personaForm.get('nombre')?.touched && personaForm.get('nombre')?.errors"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('nombre')?.hasError('required')"
+              >El nombre es obligatorio.</small
+            >
+            <small *ngIf="personaForm.get('nombre')?.hasError('pattern')"
+              >Solo letras y espacios.</small
+            >
           </div>
         </div>
 
         <div>
-          <input type="text" formControlName="apellidos" placeholder="Apellidos *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="personaForm.get('apellidos')?.touched && personaForm.get('apellidos')?.errors"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('apellidos')?.hasError('required')">El apellido es obligatorio.</small>
-            <small *ngIf="personaForm.get('apellidos')?.hasError('pattern')">Solo se permiten letras y espacios.</small>
+          <input
+            type="text"
+            formControlName="apellidos"
+            class="form-control"
+            placeholder="Apellidos *"
+          />
+          <div
+            *ngIf="personaForm.get('apellidos')?.touched && personaForm.get('apellidos')?.errors"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('apellidos')?.hasError('required')"
+              >El apellido es obligatorio.</small
+            >
+            <small *ngIf="personaForm.get('apellidos')?.hasError('pattern')"
+              >Solo letras y espacios.</small
+            >
           </div>
         </div>
 
         <div>
-          <input type="text" formControlName="cedula" placeholder="Cédula (V-12345678) *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-
-          <div *ngIf="personaForm.get('cedula')?.errors && personaForm.get('cedula')?.dirty"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('cedula')?.hasError('required')">La cédula es obligatoria.</small>
-            <small *ngIf="personaForm.get('cedula')?.hasError('pattern')">Formato inválido. Debe ser V- o E- o J-
-              seguido de un número entre 1 y 60
-              millones.</small>
+          <input
+            type="text"
+            formControlName="cedula"
+            class="form-control"
+            placeholder="Cédula (V-12345678) *"
+          />
+          <div
+            *ngIf="personaForm.get('cedula')?.errors && personaForm.get('cedula')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('cedula')?.hasError('required')"
+              >La cédula es obligatoria.</small
+            >
+            <small *ngIf="personaForm.get('cedula')?.hasError('pattern')"
+              >Formato inválido (V-, E-, J-).</small
+            >
           </div>
         </div>
+      </div>
 
+      <!-- Segunda Fila Inputs -->
+      <div class="grid-3-cols mb-2">
         <div>
-          <input type="email" formControlName="email" placeholder="Correo Electrónico *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="personaForm.get('email')?.errors && personaForm.get('email')?.dirty"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('email')?.hasError('required')">El correo electrónico es obligatorio.</small>
-            <small *ngIf="
+          <input
+            type="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="Correo Electrónico *"
+          />
+          <div
+            *ngIf="personaForm.get('email')?.errors && personaForm.get('email')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('email')?.hasError('required')"
+              >El correo es obligatorio.</small
+            >
+            <small
+              *ngIf="
                 personaForm.get('email')?.hasError('email') ||
                 personaForm.get('email')?.hasError('pattern')
-              ">
-              Formato de correo inválido (Ej: usuario@dominio.com).
-            </small>
+              "
+              >Formato inválido.</small
+            >
           </div>
         </div>
 
         <div>
-          <input type="text" formControlName="telefonoCelular" placeholder="Teléfono Celular (+584121234567) *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="
+          <input
+            type="text"
+            formControlName="telefonoCelular"
+            class="form-control"
+            placeholder="Teléfono Celular (+58412...) *"
+          />
+          <div
+            *ngIf="
               personaForm.get('telefonoCelular')?.errors &&
               personaForm.get('telefonoCelular')?.dirty
-            " style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('telefonoCelular')?.hasError('required')">El teléfono celular es
-              obligatorio.</small>
-            <small *ngIf="personaForm.get('telefonoCelular')?.hasError('pattern')">
-              Formato inválido. Debe iniciar con +58 seguido de 412, 416, 424 o 426 y 7 dígitos.
-            </small>
+            "
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('telefonoCelular')?.hasError('required')"
+              >El celular es obligatorio.</small
+            >
+            <small *ngIf="personaForm.get('telefonoCelular')?.hasError('pattern')"
+              >Formato inválido (+584...)</small
+            >
           </div>
         </div>
 
         <div>
-          <input type="text" formControlName="telefonoFijo" placeholder="Teléfono Fijo (+582121234567) *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="
+          <input
+            type="text"
+            formControlName="telefonoFijo"
+            class="form-control"
+            placeholder="Teléfono Fijo (+58212...) *"
+          />
+          <div
+            *ngIf="
               personaForm.get('telefonoFijo')?.errors && personaForm.get('telefonoFijo')?.dirty
-            " style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('telefonoFijo')?.hasError('required')">El teléfono fijo es
-              obligatorio.</small>
-            <small *ngIf="personaForm.get('telefonoFijo')?.hasError('pattern')">
-              Formato inválido. Debe iniciar con +58 seguido de 212 y 7 dígitos.
-            </small>
+            "
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('telefonoFijo')?.hasError('required')"
+              >El fijo es obligatorio.</small
+            >
+            <small *ngIf="personaForm.get('telefonoFijo')?.hasError('pattern')"
+              >Formato inválido (+582...)</small
+            >
           </div>
         </div>
-
-        <label style="display: flex; align-items: center; gap: 5px">
-          <input type="checkbox" formControlName="activo" /> ¿Está Activo?
-        </label>
       </div>
 
-      <h4 style="margin-top: 15px; margin-bottom: 5px; color: #555">Dirección Postal</h4>
-      <div formGroupName="direccion" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px">
+      <!-- Checkbox Activo -->
+      <div class="form-check mb-3">
+        <input type="checkbox" formControlName="activo" id="activoCheck" class="form-check-input" />
+        <label for="activoCheck" class="form-check-label fw-bold">¿Está Activo?</label>
+      </div>
 
+      <h5 class="section-subtitle mt-3 mb-2">Dirección Postal</h5>
 
-
+      <div formGroupName="direccion" class="grid-3-cols mb-2">
         <div>
-          <input type="text" formControlName="codigoPostal" placeholder="Código Postal *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="
+          <input
+            type="text"
+            formControlName="codigoPostal"
+            class="form-control"
+            placeholder="Código Postal *"
+          />
+          <div
+            *ngIf="
               personaForm.get('direccion.codigoPostal')?.errors &&
-              personaForm.get('direccion.codigoPostal')?.dirty
-            " style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('direccion.codigoPostal')?.hasError('required')">El código postal es
-              obligatorio.</small>
-            <small *ngIf="personaForm.get('direccion.codigoPostal')?.hasError('pattern')">El código postal contiene
-              caracteres no
-              permitidos.</small>
+              personaForm.get('direccion.codigoPostal')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('direccion.codigoPostal')?.hasError('required')"
+              >Obligatorio.</small
+            >
           </div>
         </div>
 
         <div>
-          <input type="text" formControlName="urbanizacion" placeholder="Urbanización *"
-            style="padding: 8px; width: 100%; box-sizing: border-box;">
-
+          <input
+            type="text"
+            formControlName="urbanizacion"
+            class="form-control"
+            placeholder="Urbanización *"
+          />
           <div
-            *ngIf="personaForm.get('direccion.urbanizacion')?.errors && personaForm.get('direccion.urbanizacion')?.dirty"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
-            <small *ngIf="personaForm.get('direccion.urbanizacion')?.hasError('required')">La urbanización es
-              obligatoria.</small>
-            <small *ngIf="personaForm.get('direccion.urbanizacion')?.hasError('pattern')">
-              La urbanización contiene caracteres no permitidos.
-            </small>
+            *ngIf="
+              personaForm.get('direccion.urbanizacion')?.errors &&
+              personaForm.get('direccion.urbanizacion')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('direccion.urbanizacion')?.hasError('required')"
+              >Obligatorio.</small
+            >
           </div>
         </div>
 
+        <!-- Selector Desplegable Estado / Provincia -->
         <div>
-          <input type="text" formControlName="ciudad" placeholder="Ciudad *"
-            style="padding: 8px; width: 100%; box-sizing: border-box;">
-
-          <div *ngIf="personaForm.get('direccion.ciudad')?.errors && personaForm.get('direccion.ciudad')?.dirty"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
-            <small *ngIf="personaForm.get('direccion.ciudad')?.hasError('required')">La ciudad es obligatoria.</small>
-            <small *ngIf="personaForm.get('direccion.ciudad')?.hasError('ciudadInvalida')">
-              Debe ser una ciudad principal válida (Ej: Caracas, Maracaibo, Valencia).
-            </small>
-          </div>
-        </div>
-
-        <div>
-          <input type="text" formControlName="provinciaEstado" placeholder="Estado / Provincia *"
-            style="padding: 8px; width: 100%; box-sizing: border-box;">
-
+          <select formControlName="provinciaEstado" class="form-control">
+            <option value="" disabled>Seleccione Estado *</option>
+            <option *ngFor="let estado of estadosVenezuela" [value]="estado.codigo">
+              {{ estado.codigo }} - {{ estado.nombre }}
+            </option>
+          </select>
           <div
-            *ngIf="personaForm.get('direccion.provinciaEstado')?.errors && personaForm.get('direccion.provinciaEstado')?.dirty"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
-            <small *ngIf="personaForm.get('direccion.provinciaEstado')?.hasError('required')">El Estado es
-              obligatorio.</small>
-            <small *ngIf="personaForm.get('direccion.provinciaEstado')?.hasError('estadoInvalido')">
-              Debe ser un estado válido de Venezuela (Ej: Zulia, Miranda, Distrito Capital).
-            </small>
-          </div>
-        </div>
-
-        <div>
-          <input type="text" formControlName="pais" placeholder="País *"
-            style="padding: 8px; width: 100%; box-sizing: border-box" />
-          <div *ngIf="personaForm.get('direccion.pais')?.errors && personaForm.get('direccion.pais')?.dirty"
-            style="color: #dc3545; font-size: 0.8em; margin-top: 2px">
-            <small *ngIf="personaForm.get('direccion.pais')?.hasError('required')">El pais es obligatorio.</small>
-            <small *ngIf="personaForm.get('direccion.pais')?.hasError('pattern')"> Venezuela. </small>
+            *ngIf="
+              personaForm.get('direccion.provinciaEstado')?.errors &&
+              personaForm.get('direccion.provinciaEstado')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('direccion.provinciaEstado')?.hasError('required')"
+              >Obligatorio.</small
+            >
           </div>
         </div>
       </div>
 
-      <div style="margin-top: 15px; display: flex; gap: 10px">
-        <button type="submit" style="
-            background: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-          ">
+      <div formGroupName="direccion" class="grid-3-cols mb-3">
+        <!-- Selector Desplegable Ciudad -->
+        <div>
+          <select
+            formControlName="ciudad"
+            class="form-control"
+            [attr.disabled]="ciudadesFiltradas.length === 0 ? true : null"
+          >
+            <option value="" disabled>
+              {{
+                ciudadesFiltradas.length === 0
+                  ? 'Primero seleccione un Estado'
+                  : 'Seleccione Ciudad *'
+              }}
+            </option>
+            <option *ngFor="let ciudad of ciudadesFiltradas" [value]="ciudad.codigo">
+              {{ ciudad.codigo }} - {{ ciudad.nombre }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              personaForm.get('direccion.ciudad')?.errors &&
+              personaForm.get('direccion.ciudad')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('direccion.ciudad')?.hasError('required')"
+              >Obligatorio.</small
+            >
+          </div>
+        </div>
+
+        <div>
+          <input type="text" formControlName="pais" class="form-control" placeholder="País *" />
+          <div
+            *ngIf="
+              personaForm.get('direccion.pais')?.errors && personaForm.get('direccion.pais')?.dirty"
+            class="text-danger small mt-1"
+          >
+            <small *ngIf="personaForm.get('direccion.pais')?.hasError('required')"
+              >Obligatorio.</small
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">
           {{ editandoId ? 'Actualizar' : 'Guardar Persona' }}
         </button>
-        <button type="button" *ngIf="editandoId" (click)="cancelarEdicion()" style="
-            background: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-          ">
+        <button
+          type="button"
+          *ngIf="editandoId"
+          (click)="cancelarEdicion()"
+          class="btn btn-secondary"
+        >
           Cancelar
         </button>
       </div>
     </form>
   </div>
 
-  <hr />
+  <hr class="my-4" />
 
-  <h3>Listado de Personas Activas en Memoria</h3>
-  <table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px">
-    <thead style="background: #343a40; color: white">
-      <tr>
-        <th>ID</th>
-        <th>Cédula</th>
-        <th>Nombre Completo</th>
-        <th>Nombre Completo</th>
-        <th>Contacto</th>
-        <th>Dirección Detallada</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let persona of listaPersonas" [style.opacity]="persona.activo ? '1' : '0.6'">
-        <td>{{ persona.id }}</td>
-        <td>
-          <strong>{{ persona.nombre }} {{ persona.apellidos }}</strong>
-        </td>
-        <td>
-          <div>📧 {{ persona.email }}</div>
-          <div>📱 {{ persona.telefonoCelular }}</div>
-          <div *ngIf="persona.telefonoFijo">📞 {{ persona.telefonoFijo }}</div>
-        </td>
+  <!-- Sección Tabla de Registros Agrupada -->
+  <div class="card-panel">
+    <h3 class="card-title mb-3">Listado de Personas</h3>
 
-        <td>
-          <span [style.background]="persona.activo ? '#d4edda' : '#f8d7da'"
-            [style.color]="persona.activo ? '#155724' : '#721c24'"
-            style="padding: 4px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold">
-            {{ persona.activo ? 'Activo' : 'Inactivo' }}
-          </span>
-        </td>
-        <td>
-          <button (click)="prepararEditar(persona)" style="
-              background: #007bff;
-              color: white;
-              border: none;
-              padding: 5px 10px;
-              cursor: pointer;
-              margin-right: 5px;
-              border-radius: 3px;
-            ">
-            Editar
-          </button>
-          <button (click)="eliminarPersona(persona.id)" style="
-              background: #dc3545;
-              color: white;
-              border: none;
-              padding: 5px 10px;
-              cursor: pointer;
-              border-radius: 3px;
-            ">
-            Eliminar
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="table-responsive">
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th style="width: 50px">ID</th>
+            <th style="width: 120px">Cédula</th>
+            <th style="width: 180px">Nombre</th>
+            <th>Ubicación</th>
+            <th>Contacto</th>
+            <th style="width: 100px">Estado</th>
+            <th style="width: 150px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let persona of listaPersonas" [class.row-disabled]="!persona.activo">
+            <td>{{ persona.id }}</td>
+            <td>
+              <strong>{{ persona.cedula }}</strong>
+            </td>
+            <td>
+              <strong>{{ persona.nombre }} {{ persona.apellidos }}</strong>
+            </td>
+            <td>
+              <small class="d-block text-muted">
+                📍 {{ obtenerNombreUbicacion(persona.direccion?.provinciaEstado || '', 'estado') }},
+                {{ obtenerNombreUbicacion(persona.direccion?.ciudad || '', 'ciudad') }}
+              </small>
+            </td>
+            <td>
+              <div>📧 {{ persona.email }}</div>
+              <div>📱 {{ persona.telefonoCelular }}</div>
+              <div *ngIf="persona.telefonoFijo">📞 {{ persona.telefonoFijo }}</div>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="persona.activo ? 'badge-success' : 'badge-danger'">
+                {{ persona.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-1">
+                <button (click)="prepararEditar(persona)" class="btn btn-primary btn-sm">
+                  Editar
+                </button>
+                <button (click)="eliminarPersona(persona.id)" class="btn btn-danger btn-sm">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

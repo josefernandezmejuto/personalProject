@@ -3,6 +3,7 @@ package com.tuempresa.proyecto.service;
 import com.tuempresa.proyecto.dto.PersonaDTO;
 import com.tuempresa.proyecto.model.Persona;
 import com.tuempresa.proyecto.repository.PersonaRepository;
+import com.tuempresa.proyecto.dto.DireccionDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,11 +53,18 @@ public class PersonaService {
         existente.setNombre(dto.getNombre());
         existente.setApellidos(dto.getApellidos());
         existente.setEmail(dto.getEmail());
-        existente.setTelefono(dto.getTelefono());
+        existente.setTelefonoCelular(dto.getTelefonoCelular());
+        existente.setTelefonoFijo(dto.getTelefonoFijo());
         if (dto.getActivo() != null) {
             existente.setActivo(dto.getActivo());
         }
-
+        if (dto.getDireccion() != null) {
+            existente.setCodigoPostal(dto.getDireccion().getCodigoPostal());
+            existente.setCiudad(dto.getDireccion().getCiudad());
+            existente.setProvinciaEstado(dto.getDireccion().getProvinciaEstado());
+            existente.setPais(dto.getDireccion().getPais());
+            existente.setUrbanizacion(dto.getDireccion().getUrbanizacion());
+        }
         Persona actualizada = personaRepository.save(existente);
         return convertirADTO(actualizada);
     }
@@ -76,7 +84,18 @@ public class PersonaService {
         dto.setNombre(p.getNombre());
         dto.setApellidos(p.getApellidos());
         dto.setEmail(p.getEmail());
-        dto.setTelefono(p.getTelefono());
+        dto.setTelefonoCelular(p.getTelefonoCelular());
+        dto.setTelefonoFijo(p.getTelefonoFijo());
+        if (p.getCodigoPostal() != null || p.getCiudad() != null || p.getProvinciaEstado() != null
+                || p.getPais() != null || p.getUrbanizacion() != null) {
+            DireccionDTO direccionDTO = new DireccionDTO();
+            direccionDTO.setCodigoPostal(p.getCodigoPostal());
+            direccionDTO.setCiudad(p.getCiudad());
+            direccionDTO.setProvinciaEstado(p.getProvinciaEstado());
+            direccionDTO.setPais(p.getPais());
+            direccionDTO.setUrbanizacion(p.getUrbanizacion());
+            dto.setDireccion(direccionDTO);
+        }
         dto.setActivo(p.getActivo());
         return dto;
     }
@@ -88,7 +107,15 @@ public class PersonaService {
         p.setNombre(dto.getNombre());
         p.setApellidos(dto.getApellidos());
         p.setEmail(dto.getEmail());
-        p.setTelefono(dto.getTelefono());
+        p.setTelefonoCelular(dto.getTelefonoCelular());
+        p.setTelefonoFijo(dto.getTelefonoFijo());
+        if (dto.getDireccion() != null) {
+            p.setCodigoPostal(dto.getDireccion().getCodigoPostal());
+            p.setCiudad(dto.getDireccion().getCiudad());
+            p.setProvinciaEstado(dto.getDireccion().getProvinciaEstado());
+            p.setPais(dto.getDireccion().getPais());
+            p.setUrbanizacion(dto.getDireccion().getUrbanizacion());
+        }
         p.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
         return p;
     }

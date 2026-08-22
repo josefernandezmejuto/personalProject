@@ -28,5 +28,6 @@ export class DashboardComponent {
   logout(): void {
     // Por ahora simulamos el logout borrando el rastro y volviendo al login
     this.router.navigate(['/login']);
+    console.log('¡Logout exitoso! Redirigiendo al login...');
   }
 }

@@ -69,8 +69,15 @@ export class FacturaComponent implements OnInit {
   cargarCatalogos(): void {
     this.listaFacturas = this.facturaService.getFacturas();
 
-    this.personaService.getPersonas().subscribe((personas: Persona[]) => {
-      this.listaClientes = personas.filter((p: Persona) => p.activo);
+    //this.personaService.getPersonas().subscribe((personas: Persona[]) => {
+    //  this.listaClientes = personas.filter((p: Persona) => p.activo);
+    //});
+
+    this.personaService.personas$.subscribe({
+      next: (personas: Persona[]) => {
+        // Tu lógica actual para procesar o asignar la lista de personas
+      },
+      error: (err) => console.error('Error al escuchar personas en Factura:', err)
     });
 
     const articulos = this.articuloService.getArticulos();
@@ -84,7 +91,6 @@ export class FacturaComponent implements OnInit {
       const art = this.listaArticulos.find(a => a.id === Number(this.articuloSeleccionadoId));
       if (art) {
         this.descripcionLinea = art.descripcion;
-        this.descuentoLinea = art.descuento || 0;
       }
     } else {
       this.descripcionLinea = '';
@@ -100,11 +106,6 @@ export class FacturaComponent implements OnInit {
 
     const articuloOriginal = this.listaArticulos.find(a => a.id === Number(this.articuloSeleccionadoId));
     if (!articuloOriginal) return;
-
-    if (this.cantidadArticulo > articuloOriginal.stockActual) {
-      alert(`Stock insuficiente. Disponible: ${articuloOriginal.stockActual}`);
-      return;
-    }
 
     const articuloAjustado: Articulo = {
       ...articuloOriginal,
@@ -136,7 +137,7 @@ export class FacturaComponent implements OnInit {
 
   recalcularTotales(): void {
     this.subtotal = this.detallesActuales.reduce((sum: number, item: DetalleFactura) => sum + (item.precioUnitario * item.cantidad), 0);
-    
+
     this.montoDescuentoTotal = this.detallesActuales.reduce((sum: number, item: DetalleFactura) => {
       const descUnitario = (item.precioUnitario * (item.descuento / 100));
       return sum + (descUnitario * item.cantidad);

@@ -4,9 +4,7 @@ export interface Articulo {
   descripcion: string;
   categoria: string;
   precioUnitario: number;
-  descuento: number;        // Porcentaje de descuento (0 - 100)
-  stockActual: number;
-  stockMinimo: number;
+  precioUrgente: number;
   activo: boolean;
   fechaCreacion?: Date;
 }

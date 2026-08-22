@@ -1,37 +1,63 @@
 <div class="dashboard-layout">
-  
+
+  <!-- Barra Superior (Topbar) -->
   <header class="topbar">
-    <button class="hamburger-btn" (click)="toggleMenu()">☰</button>
-    <div class="logo">Mi Sistema Enterprise</div>
-    <button class="logout-btn" (click)="logout()">🔒 Salir</button>
+    <div class="d-flex align-items-center gap-3">
+      <button class="hamburger-btn" (click)="toggleMenu()" aria-label="Toggle Navigation">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <div class="logo fw-bold fs-5">
+        <i class="bi bi-building me-2"></i>Mi Sistema Enterprise
+      </div>
+    </div>
+
+    <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2" (click)="logout()">
+      <i class="bi bi-lock-fill"></i> Salir
+    </button>
   </header>
 
+  <!-- Contenedor Principal (Sidebar + Contenido) -->
   <div class="main-container">
+
+    <!-- Menú Lateral (Sidebar) -->
     <nav class="sidebar" [class.abierto]="menuAbierto">
-      <ul>
+      <ul class="nav-menu">
         <li>
-          <a routerLink="personas" routerLinkActive="active" (click)="cerrarMenuMovil()">👤 Personas</a>
+          <a routerLink="personas" routerLinkActive="active" (click)="cerrarMenuMovil()">
+            <i class="bi bi-people-fill me-2"></i> Personas
+          </a>
         </li>
         <li>
-          <a routerLink="facturas" routerLinkActive="active" (click)="cerrarMenuMovil()">🧾 Facturas</a>
+          <a routerLink="facturas" routerLinkActive="active" (click)="cerrarMenuMovil()">
+            <i class="bi bi-receipt me-2"></i> Facturas
+          </a>
         </li>
         <li>
-          <a routerLink="inventario" routerLinkActive="active" (click)="cerrarMenuMovil()">📦 Inventario</a>
+          <a routerLink="inventario" routerLinkActive="active" (click)="cerrarMenuMovil()">
+            <i class="bi bi-box-seam me-2"></i> Inventario
+          </a>
         </li>
         <li>
-          <a routerLink="consultas" routerLinkActive="active" (click)="cerrarMenuMovil()">🔍 Consultas</a>
+          <a routerLink="consultas" routerLinkActive="active" (click)="cerrarMenuMovil()">
+            <i class="bi bi-search me-2"></i> Consultas
+          </a>
         </li>
         <li>
-          <a routerLink="configuracion" routerLinkActive="active" (click)="cerrarMenuMovil()">⚙️ Configuración</a>
+          <a routerLink="configuracion" routerLinkActive="active" (click)="cerrarMenuMovil()">
+            <i class="bi bi-gear-fill me-2"></i> Configuración
+          </a>
         </li>
       </ul>
     </nav>
 
+    <!-- Overlay para dispositivos móviles -->
     <div class="overlay" *ngIf="menuAbierto" (click)="toggleMenu()"></div>
 
-    <main class="content">
+    <!-- Área de Contenido Dinámico -->
+    <main class="content p-4">
       <router-outlet></router-outlet>
     </main>
+
   </div>
 
 </div>

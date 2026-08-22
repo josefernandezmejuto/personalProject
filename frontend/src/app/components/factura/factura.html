@@ -1,40 +1,24 @@
-<div style="padding: 20px; font-family: Arial, sans-serif">
-  <!-- Formulario de Facturación -->
-  <div
-    style="
-      background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 30px;
-    "
-  >
-    <h3 style="margin-top: 0; color: #333">🧾 Generar Nueva Factura</h3>
+<div class="facturas-container">
+  <!-- Tarjeta de Formulario de Facturación -->
+  <div class="card-panel">
+    <h3 class="card-title"><i class="bi bi-receipt-cutoff me-2"></i> Generar Nueva Factura</h3>
 
     <form [formGroup]="facturaForm" (ngSubmit)="guardarFactura()">
-      <!-- Fila 1: Datos de Cabecera -->
-      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px">
-        <div>
-          <label style="font-size: 0.85em; font-weight: bold; color: #555">Nº Factura</label>
+      <!-- Fila 1: Datos de Cabecera (Nº Factura y Cliente) -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label">Nº Factura</label>
           <input
             type="text"
             formControlName="numeroFactura"
-            style="
-              padding: 8px;
-              width: 100%;
-              box-sizing: border-box;
-              background-color: #e9ecef;
-              font-weight: bold;
-            "
+            class="form-control fw-bold bg-light"
+            readonly
           />
         </div>
 
-        <div>
-          <label style="font-size: 0.85em; font-weight: bold; color: #555">Cliente *</label>
-          <select
-            formControlName="clienteId"
-            style="padding: 8px; width: 100%; box-sizing: border-box"
-          >
+        <div class="col-md-8">
+          <label class="form-label">Cliente *</label>
+          <select formControlName="clienteId" class="form-select">
             <option value="">-- Seleccione un Cliente --</option>
             <option *ngFor="let c of listaClientes" [value]="c.id">
               {{ c.cedula }} - {{ c.nombre }} {{ c.apellidos }}
@@ -42,33 +26,26 @@
           </select>
           <div
             *ngIf="facturaForm.get('clienteId')?.errors && facturaForm.get('clienteId')?.dirty"
-            style="color: #dc3545; font-size: 0.8em"
+            class="text-danger small mt-1"
           >
             <small>Debe seleccionar un cliente obligatorio.</small>
           </div>
         </div>
       </div>
 
-      <!-- Fila 2: Selector de Artículos Rediseñado -->
-      <div style="border-top: 1px dashed #ccc; padding-top: 15px; margin-bottom: 15px">
-        <h4 style="margin-top: 0; color: #555">Añadir Ítems</h4>
+      <!-- Reemplazar el <div> con border-dashed por este bloque limpio: -->
+      <div class="pt-3 mb-3" style="border-top: 1px dashed #cccccc">
+        <h5 class="section-subtitle mb-3"><i class="bi bi-cart-plus me-1"></i> Añadir Ítems</h5>
 
-        <div
-          style="
-            display: grid;
-            grid-template-columns: 3fr 3fr 1fr 1fr 1.5fr;
-            gap: 10px;
-            align-items: end;
-          "
-        >
+        <div class="row g-2 align-items-end mb-3">
           <!-- 1. Desplegable de Artículo -->
-          <div>
-            <label style="font-size: 0.8em; color: #666; font-weight: bold">Artículo *</label>
+          <div class="col-md-4">
+            <label class="form-label mb-1">Artículo *</label>
             <select
               [(ngModel)]="articuloSeleccionadoId"
               (change)="alSeleccionarArticulo()"
               [ngModelOptions]="{ standalone: true }"
-              style="padding: 8px; width: 100%; box-sizing: border-box"
+              class="form-select"
             >
               <option [ngValue]="null">-- Seleccione Artículo --</option>
               <option *ngFor="let a of listaArticulos" [ngValue]="a.id">
@@ -78,32 +55,32 @@
           </div>
 
           <!-- 2. Descripción Editable -->
-          <div>
-            <label style="font-size: 0.8em; color: #666; font-weight: bold">Descripción</label>
+          <div class="col-md-3">
+            <label class="form-label mb-1">Descripción</label>
             <input
               type="text"
               [(ngModel)]="descripcionLinea"
               placeholder="Descripción del ítem"
               [ngModelOptions]="{ standalone: true }"
-              style="padding: 8px; width: 100%; box-sizing: border-box"
+              class="form-control"
             />
           </div>
 
           <!-- 3. Cantidad -->
-          <div>
-            <label style="font-size: 0.8em; color: #666; font-weight: bold">Cantidad *</label>
+          <div class="col-md-2">
+            <label class="form-label mb-1">Cantidad *</label>
             <input
               type="number"
               min="1"
               [(ngModel)]="cantidadArticulo"
               [ngModelOptions]="{ standalone: true }"
-              style="padding: 8px; width: 100%; box-sizing: border-box"
+              class="form-control"
             />
           </div>
 
           <!-- 4. Descuento (%) -->
-          <div>
-            <label style="font-size: 0.8em; color: #666; font-weight: bold">Desc. (%)</label>
+          <div class="col-md-1">
+            <label class="form-label mb-1">Desc. (%)</label>
             <input
               type="number"
               min="0"
@@ -111,140 +88,94 @@
               [(ngModel)]="descuentoLinea"
               placeholder="0"
               [ngModelOptions]="{ standalone: true }"
-              style="padding: 8px; width: 100%; box-sizing: border-box"
+              class="form-control"
             />
           </div>
 
           <!-- 5. Botón Agregar -->
-          <div>
+          <div class="col-md-2">
             <button
               type="button"
               (click)="agregarArticulo()"
-              style="
-                background-color: #17a2b8;
-                color: white;
-                border: none;
-                padding: 9px 15px;
-                border-radius: 4px;
-                cursor: pointer;
-                width: 100%;
-                font-weight: bold;
-              "
+              class="btn btn-info text-white w-100 fw-bold"
             >
-              + Agregar
+              <i class="bi bi-plus-lg me-1"></i> Agregar
             </button>
           </div>
         </div>
       </div>
 
       <!-- Tabla Detalle de Factura -->
-      <table
-        style="width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white"
-      >
-        <thead>
-          <tr style="background-color: #e9ecef; text-align: left; font-size: 0.9em">
-            <th style="padding: 8px">Código</th>
-            <th style="padding: 8px">Descripción</th>
-            <th style="padding: 8px">Precio</th>
-            <th style="padding: 8px">Cant.</th>
-            <th style="padding: 8px">Desc.</th>
-            <th style="padding: 8px">Subtotal</th>
-            <th style="padding: 8px; text-align: center">Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="let item of detallesActuales; let i = index"
-            style="border-bottom: 1px solid #dee2e6; font-size: 0.9em"
-          >
-            <td style="padding: 8px">{{ item.articulo.codigo }}</td>
-            <td style="padding: 8px">{{ item.articulo.descripcion }}</td>
-            <td style="padding: 8px">${{ item.precioUnitario | number: '1.2-2' }}</td>
-            <td style="padding: 8px">{{ item.cantidad }}</td>
-            <td style="padding: 8px">{{ item.descuento }}%</td>
-            <td style="padding: 8px; font-weight: bold">${{ item.subtotal | number: '1.2-2' }}</td>
-            <td style="padding: 8px; text-align: center">
-              <button
-                type="button"
-                (click)="eliminarDetalle(i)"
-                style="
-                  background-color: #dc3545;
-                  color: white;
-                  border: none;
-                  padding: 3px 8px;
-                  border-radius: 3px;
-                  cursor: pointer;
-                "
-              >
-                ✕
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="detallesActuales.length === 0">
-            <td colspan="7" style="padding: 15px; text-align: center; color: #888">
-              No hay artículos agregados a la factura.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive mb-3">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th style="width: 120px">Código</th>
+              <th>Descripción</th>
+              <th style="width: 110px">Precio</th>
+              <th style="width: 80px">Cant.</th>
+              <th style="width: 80px">Desc.</th>
+              <th style="width: 120px">Subtotal</th>
+              <th style="width: 80px; text-align: center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of detallesActuales; let i = index">
+              <td>
+                <strong>{{ item.articulo.codigo }}</strong>
+              </td>
+              <td>{{ item.articulo.descripcion }}</td>
+              <td>${{ item.precioUnitario | number: '1.2-2' }}</td>
+              <td>{{ item.cantidad }}</td>
+              <td>{{ item.descuento }}%</td>
+              <td>
+                <strong>${{ item.subtotal | number: '1.2-2' }}</strong>
+              </td>
+              <td style="text-align: center">
+                <button
+                  type="button"
+                  (click)="eliminarDetalle(i)"
+                  class="btn btn-danger btn-sm px-2 py-0"
+                >
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="detallesActuales.length === 0">
+              <td colspan="7" class="text-center text-muted py-3">
+                No hay artículos agregados a la factura.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Resumen de Totales Integrado a la Derecha -->
-      <div style="display: flex; justify-content: flex-end; margin-top: 15px">
-        <div
-          style="
-            width: 310px;
-            background-color: #fff;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-          "
-        >
+      <div class="d-flex justify-content-end my-3">
+        <div class="summary-box">
           <!-- Subtotal -->
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px">
+          <div class="d-flex justify-content-between mb-2">
             <span>Subtotal:</span>
             <strong>${{ subtotal | number: '1.2-2' }}</strong>
           </div>
 
           <!-- Descuento -->
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 6px;
-              color: #dc3545;
-            "
-          >
+          <div class="d-flex justify-content-between mb-2 text-danger">
             <span>Descuento:</span>
             <strong>-${{ montoDescuentoTotal | number: '1.2-2' }}</strong>
           </div>
 
-          <!-- Pronto Pago con Checkbox incorporado -->
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 6px;
-              color: #d97706;
-            "
-          >
+          <!-- Pronto Pago -->
+          <div class="d-flex justify-content-between align-items-center mb-2 text-warning-dark">
             <label
-              style="
-                cursor: pointer;
-                font-size: 0.95em;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                margin: 0;
-                user-select: none;
-              "
+              class="form-check-label user-select-none d-flex align-items-center gap-2 m-0 cursor-pointer"
             >
               <input
                 type="checkbox"
                 [(ngModel)]="aplicaProntoPago"
                 (change)="recalcularTotales()"
                 [ngModelOptions]="{ standalone: true }"
-                style="cursor: pointer; width: 15px; height: 15px"
+                class="form-check-input mt-0"
               />
               Pronto Pago ({{ porcentajeProntoPago }}%):
             </label>
@@ -252,108 +183,89 @@
           </div>
 
           <!-- IVA -->
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px">
+          <div class="d-flex justify-content-between mb-2">
             <span>IVA ({{ porcentajeIva }}%):</span>
             <strong>${{ montoIva | number: '1.2-2' }}</strong>
           </div>
 
-          <hr style="margin: 8px 0; border: 0; border-top: 1px solid #dee2e6" />
+          <hr class="my-2" />
 
           <!-- Total -->
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              font-size: 1.15em;
-              color: #28a745;
-            "
-          >
-            <strong>Total:</strong>
-            <strong>${{ total | number: '1.2-2' }}</strong>
+          <div class="d-flex justify-content-between fs-5 text-success fw-bold">
+            <span>Total:</span>
+            <span>${{ total | number: '1.2-2' }}</span>
           </div>
         </div>
       </div>
 
       <!-- Botón Procesar -->
-      <div style="margin-top: 20px">
-        <button
-          type="submit"
-          style="
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-          "
-        >
-          💾 Emitir y Guardar Factura
+      <div class="mt-4">
+        <button type="submit" class="btn btn-success fw-bold">
+          <i class="bi bi-floppy-fill me-1"></i> Emitir y Guardar Factura
         </button>
       </div>
     </form>
   </div>
 
+  <hr class="my-4" />
+
   <!-- Historial de Facturas Emitidas -->
-  <h3>📋 Facturas Emitidas</h3>
-  <table
-    style="
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      background-color: white;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    "
-  >
-    <thead>
-      <tr style="background-color: #f1f1f1; text-align: left; border-bottom: 2px solid #dee2e6">
-        <th style="padding: 10px">Nº Factura</th>
-        <th style="padding: 10px">Fecha</th>
-        <th style="padding: 10px">Cliente</th>
-        <th style="padding: 10px">Total</th>
-        <th style="padding: 10px">Estado</th>
-        <th style="padding: 10px; text-align: center">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let f of listaFacturas" style="border-bottom: 1px solid #dee2e6">
-        <td style="padding: 10px; font-weight: bold">{{ f.numeroFactura }}</td>
-        <td style="padding: 10px">{{ f.fechaEmision | date: 'dd/MM/yyyy HH:mm' }}</td>
-        <td style="padding: 10px">
-          {{ f.cliente.nombre }} {{ f.cliente.apellidos }} ({{ f.cliente.cedula }})
-        </td>
-        <td style="padding: 10px; font-weight: bold">${{ f.total | number: '1.2-2' }}</td>
-        <td style="padding: 10px">
-          <span
-            [style.background-color]="f.estado === 'Pagada' ? '#e2f0d9' : '#f8d7da'"
-            [style.color]="f.estado === 'Pagada' ? '#385723' : '#721c24'"
-            style="padding: 3px 8px; border-radius: 12px; font-size: 0.85em"
-          >
-            {{ f.estado }}
-          </span>
-        </td>
-        <td style="padding: 10px; text-align: center">
-          <button
-            (click)="anularFactura(f.id!)"
-            *ngIf="f.estado !== 'Anulada'"
-            style="
-              background-color: #dc3545;
-              color: white;
-              border: none;
-              padding: 5px 10px;
-              border-radius: 3px;
-              cursor: pointer;
-            "
-          >
-            Anular
-          </button>
-        </td>
-      </tr>
-      <tr *ngIf="listaFacturas.length === 0">
-        <td colspan="6" style="padding: 15px; text-align: center; color: #888">
-          No se han emitido facturas.
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="card-panel">
+    <h3 class="card-title mb-3"><i class="bi bi-clock-history me-2"></i> Facturas Emitidas</h3>
+
+    <div class="table-responsive">
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th style="width: 130px">Nº Factura</th>
+            <th style="width: 150px">Fecha</th>
+            <th>Cliente</th>
+            <th style="width: 130px">Total</th>
+            <th style="width: 120px">Estado</th>
+            <th style="width: 110px; text-align: center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of listaFacturas" [class.row-disabled]="f.estado === 'Anulada'">
+            <td>
+              <strong>{{ f.numeroFactura }}</strong>
+            </td>
+            <td>{{ f.fechaEmision | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              {{ f.cliente.nombre }} {{ f.cliente.apellidos }}
+              <small class="text-muted">({{ f.cliente.cedula }})</small>
+            </td>
+            <td>
+              <strong>${{ f.total | number: '1.2-2' }}</strong>
+            </td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'badge-success': f.estado === 'Pagada',
+                  'badge-danger': f.estado === 'Anulada',
+                  'badge-warning': f.estado !== 'Pagada' && f.estado !== 'Anulada',
+                }"
+              >
+                {{ f.estado }}
+              </span>
+            </td>
+            <td style="text-align: center">
+              <button
+                (click)="anularFactura(f.id!)"
+                *ngIf="f.estado !== 'Anulada'"
+                class="btn btn-danger btn-sm"
+              >
+                Anular
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="listaFacturas.length === 0">
+            <td colspan="6" class="text-center text-muted py-4">No se han emitido facturas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

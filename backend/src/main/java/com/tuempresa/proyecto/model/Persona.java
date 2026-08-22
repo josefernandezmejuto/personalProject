@@ -24,44 +24,166 @@ public class Persona {
     @Column(nullable = false)
     private String apellidos;
 
+    @NotBlank(message = "El email es obligatorio")
+    @Column(nullable = false)
     private String email;
-    private String telefono;
+
+    @NotBlank(message = "El teléfono celular es obligatorio")
+    @Column(nullable = false)
+    private String telefonoCelular;
+
+    @NotBlank(message = "El teléfono fijo es obligatorio")
+    @Column(nullable = false)
+    private String telefonoFijo;
+
+    @NotBlank(message = "El código postal es obligatorio")
+    @Column(nullable = false)
+    private String codigoPostal;
+
+    @NotBlank(message = "La ciudad es obligatoria")
+    @Column(nullable = false)
+    private String ciudad;
+
+    @NotBlank(message = "La provincia/estado es obligatoria")
+    @Column(nullable = false)
+    private String provinciaEstado;
+
+    @NotBlank(message = "El país es obligatorio")
+    @Column(nullable = false)
+    private String pais;
+
+    @NotBlank(message = "La urbanización es obligatoria")
+    @Column(nullable = false)
+    private String urbanizacion;
 
     @NotNull
     @Column(nullable = false)
     private Boolean activo = true;
 
-    public Persona() {}
+    public Persona() {
+    }
 
-    public Persona(Long id, String cedula, String nombre, String apellidos, String email, String telefono, Boolean activo) {
+    public Persona(Long id, String cedula, String nombre, String apellidos, String email, String telefonoCelular,
+            String telefonoFijo, String direccion, String codigoPostal, String ciudad, String provinciaEstado,
+            String pais, String urbanizacion, Boolean activo) {
         this.id = id;
         this.cedula = cedula;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.email = email;
-        this.telefono = telefono;
+        this.telefonoCelular = telefonoCelular;
+        this.telefonoFijo = telefonoFijo;
         this.activo = activo;
+        this.codigoPostal = codigoPostal;
+        this.urbanizacion = urbanizacion;
+        this.ciudad = ciudad;
+        this.provinciaEstado = provinciaEstado;
+        this.pais = pais;
+
     }
 
     // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getCedula() { return cedula; }
-    public void setCedula(String cedula) { this.cedula = cedula; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getCedula() {
+        return cedula;
+    }
 
-    public String getApellidos() { return apellidos; }
-    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public Boolean getActivo() { return activo; }
-    public void setActivo(Boolean activo) { this.activo = activo; }
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefonoCelular() {
+        return telefonoCelular;
+    }
+
+    public void setTelefonoCelular(String telefonoCelular) {
+        this.telefonoCelular = telefonoCelular;
+    }
+
+    public String getTelefonoFijo() {
+        return telefonoFijo;
+    }
+
+    public void setTelefonoFijo(String telefonoFijo) {
+        this.telefonoFijo = telefonoFijo;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+   public String getCodigoPostal() {
+        return codigoPostal;
+    }
+
+    public void setCodigoPostal(String codigoPostal) {
+        this.codigoPostal = codigoPostal;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getProvinciaEstado() {
+        return provinciaEstado;
+    }
+
+    public void setProvinciaEstado(String provinciaEstado) {
+        this.provinciaEstado = provinciaEstado;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getUrbanizacion() {
+        return urbanizacion;
+    }
+
+    public void setUrbanizacion(String urbanizacion) {
+        this.urbanizacion = urbanizacion;
+    }
 }

@@ -1,76 +1,56 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Persona } from '../models/persona.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PersonaService {
+  private apiUrl = 'http://localhost:8080/api/personas';
 
-  // Un registro inicial mockeado para no ver la pantalla vacía al arrancar
-  private listaPersonas: Persona[] = [
-    {
-      id: 1,
-      nombre: 'Manuel',
-      apellidos: 'Fernández',
-      cedula: 'V-6916613', // <-- AÑADE UN VALOR MOCKEADO AQUÍ
-      email: 'manuel.fernandez@email.com',
-      telefonoCelular: '+584129092717',
-      telefonoFijo: '+582127309486',
-      activo: true,
-      fechaRegistro: new Date(),
-      direccion: {
-        codigoPostal: '28046',
-        urbanizacion: 'Sabana Grande',
-        ciudad: 'Caracas',
-        provinciaEstado: 'Miranda',
-        pais: 'Venezuela'
-      }
-    }
-  ];
+  private personasSubject = new BehaviorSubject<Persona[]>([]);
+  public personas$ = this.personasSubject.asObservable();
 
-  // El BehaviorSubject nos permite transmitir la lista en tiempo real a cualquier componente
-  private personasSubject = new BehaviorSubject<Persona[]>(this.listaPersonas);
-  private idContador = 2; // Simulador de ID auto-incremental
+  constructor(private http: HttpClient) {}
 
-  constructor() {}
-
-  // 1. OBTENER TODAS
-  getPersonas(): Observable<Persona[]> {
-    return this.personasSubject.asObservable();
+  // 1. GET ALL
+  cargarPersonas(): Observable<Persona[]> {
+    return this.http.get<Persona[]>(this.apiUrl).pipe(
+      tap((personas) => this.personasSubject.next(personas))
+    );
   }
 
-  // 2. INCLUIR (CREAR)
-  addPersona(nuevaPersona: Omit<Persona, 'id' | 'fechaRegistro'>): void {
-    const personaCompleta: Persona = {
-      ...nuevaPersona,
-      id: this.idContador++,
-      fechaRegistro: new Date()
-    };
-    this.listaPersonas = [...this.listaPersonas, personaCompleta];
-    this.personasSubject.next(this.listaPersonas);
+  // 2. CREATE (POST)
+  addPersona(nuevaPersona: Omit<Persona, 'id' | 'fechaRegistro'>): Observable<Persona> {
+    console.log('2.- persona.service.ts - Datos a enviar para crear persona:', nuevaPersona);
+    return this.http.post<Persona>(this.apiUrl, nuevaPersona).pipe(
+      tap((personaCreada) => {
+        // Agregamos la persona devuelta por DB al estado local
+        const listaActual = this.personasSubject.getValue();
+        this.personasSubject.next([...listaActual, personaCreada]);
+      })
+    );
   }
 
-  // 3. ACTUALIZAR (EDITAR)
-  updatePersona(id: number, personaActualizada: Partial<Persona>): void {
-    this.listaPersonas = this.listaPersonas.map(p => {
-      if (p.id === id) {
-        return {
-          ...p,
-          ...personaActualizada,
-          direccion: personaActualizada.direccion
-            ? { ...p.direccion, ...personaActualizada.direccion }
-            : p.direccion
-        };
-      }
-      return p;
-    });
-    this.personasSubject.next(this.listaPersonas);
+  // 3. UPDATE (PUT/PATCH)
+  updatePersona(id: number, personaActualizada: Partial<Persona>): Observable<Persona> {
+    return this.http.put<Persona>(`${this.apiUrl}/${id}`, personaActualizada).pipe(
+      tap((personaServidor) => {
+        const listaActual = this.personasSubject.getValue();
+        const listaModificada = listaActual.map(p => p.id === id ? personaServidor : p);
+        this.personasSubject.next(listaModificada);
+      })
+    );
   }
 
-  // 4. ELIMINAR (BORRAR)
-  deletePersona(id: number): void {
-    this.listaPersonas = this.listaPersonas.filter(p => p.id !== id);
-    this.personasSubject.next(this.listaPersonas);
+  // 4. DELETE
+  deletePersona(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => {
+        const listaActual = this.personasSubject.getValue();
+        this.personasSubject.next(listaActual.filter(p => p.id !== id));
+      })
+    );
   }
 }

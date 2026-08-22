@@ -4,10 +4,20 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PersonaService } from '../../services/persona.service';
 import { Persona } from '../../models/persona.model';
 
+export interface Estado {
+  codigo: string;
+  nombre: string;
+}
+
+export interface Ciudad {
+  codigo: string;
+  nombre: string;
+  codigoEstado: string;
+}
+
 @Component({
   selector: 'app-persona',
   standalone: true,
-  // ¡Crucial! Importamos ReactiveFormsModule para que funcionen los formularios
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './persona.html',
   styleUrls: ['./persona.css'],
@@ -15,84 +25,155 @@ import { Persona } from '../../models/persona.model';
 export class PersonaComponent implements OnInit {
   listaPersonas: Persona[] = [];
   personaForm!: FormGroup;
-  editandoId: number | null = null; // Nos dirá si estamos creando o editando
+  editandoId: number | null = null;
+  ciudadesFiltradas: Ciudad[] = [];
 
-  estadosVenezuela: string[] = [
-    'Amazonas',
-    'Anzoátegui',
-    'Apure',
-    'Aragua',
-    'Barinas',
-    'Bolívar',
-    'Carabobo',
-    'Cojedes',
-    'Delta Amacuro',
-    'Distrito Capital',
-    'Falcon',
-    'Guárico',
-    'Lara',
-    'Mérida',
-    'Miranda',
-    'Monagas',
-    'Nueva Esparta',
-    'Portuguesa',
-    'Sucre',
-    'Táchira',
-    'Trujillo',
-    'Vargas',
-    'Yaracuy',
-    'Zulia',
-    'Dependencias Federales',
+  estadosVenezuela: Estado[] = [
+    { codigo: '001', nombre: 'Amazonas' },
+    { codigo: '002', nombre: 'Anzoátegui' },
+    { codigo: '003', nombre: 'Apure' },
+    { codigo: '004', nombre: 'Aragua' },
+    { codigo: '005', nombre: 'Barinas' },
+    { codigo: '006', nombre: 'Bolívar' },
+    { codigo: '007', nombre: 'Carabobo' },
+    { codigo: '008', nombre: 'Cojedes' },
+    { codigo: '009', nombre: 'Delta Amacuro' },
+    { codigo: '010', nombre: 'Dependencias Federales' },
+    { codigo: '011', nombre: 'Distrito Capital' },
+    { codigo: '012', nombre: 'Falcón' },
+    { codigo: '013', nombre: 'Guárico' },
+    { codigo: '014', nombre: 'Lara' },
+    { codigo: '015', nombre: 'Mérida' },
+    { codigo: '016', nombre: 'Miranda' },
+    { codigo: '017', nombre: 'Monagas' },
+    { codigo: '018', nombre: 'Nueva Esparta' },
+    { codigo: '019', nombre: 'Portuguesa' },
+    { codigo: '020', nombre: 'Sucre' },
+    { codigo: '021', nombre: 'Táchira' },
+    { codigo: '022', nombre: 'Trujillo' },
+    { codigo: '023', nombre: 'La Guaira (Vargas)' },
+    { codigo: '024', nombre: 'Yaracuy' },
+    { codigo: '025', nombre: 'Zulia' }
   ];
 
-  ciudadesVenezuela: string[] = [
-    'Caracas',
-    'Maracaibo',
-    'Valencia',
-    'Barquisimeto',
-    'Maracay',
-    'Ciudad Guayana',
-    'San Cristóbal',
-    'Maturín',
-    'Barcelona',
-    'Puerto Cruz',
-    'Cumaná',
-    'Mérida',
-    'Barinas',
-    'Guayana',
-    'Coro',
-    'Valera',
-    'Guanare',
-    'San Fernando de Apure',
-    'Los Teques',
-    'San Felipe',
-    'San Carlos',
-    'La Asunción',
-    'Tucupita',
-    'Puerto Ayacucho',
+  ciudadesVenezuela: Ciudad[] = [
+    { codigo: 'C001', nombre: 'Puerto Ayacucho', codigoEstado: '001' },
+    { codigo: 'C002', nombre: 'San Fernando de Atabapo', codigoEstado: '001' },
+    { codigo: 'C003', nombre: 'Barcelona', codigoEstado: '002' },
+    { codigo: 'C004', nombre: 'Puerto La Cruz', codigoEstado: '002' },
+    { codigo: 'C005', nombre: 'El Tigre', codigoEstado: '002' },
+    { codigo: 'C006', nombre: 'Anaco', codigoEstado: '002' },
+    { codigo: 'C007', nombre: 'San Fernando de Apure', codigoEstado: '003' },
+    { codigo: 'C008', nombre: 'Achaguas', codigoEstado: '003' },
+    { codigo: 'C009', nombre: 'Guasdualito', codigoEstado: '003' },
+    { codigo: 'C010', nombre: 'Maracay', codigoEstado: '004' },
+    { codigo: 'C011', nombre: 'Turmero', codigoEstado: '004' },
+    { codigo: 'C012', nombre: 'La Victoria', codigoEstado: '004' },
+    { codigo: 'C013', nombre: 'Cagua', codigoEstado: '004' },
+    { codigo: 'C014', nombre: 'Barinas', codigoEstado: '005' },
+    { codigo: 'C015', nombre: 'Socopó', codigoEstado: '005' },
+    { codigo: 'C016', nombre: 'Sabaneta', codigoEstado: '005' },
+    { codigo: 'C017', nombre: 'Ciudad Guayana (Puerto Ordaz/San Félix)', codigoEstado: '006' },
+    { codigo: 'C018', nombre: 'Ciudad Bolívar', codigoEstado: '006' },
+    { codigo: 'C019', nombre: 'Upata', codigoEstado: '006' },
+    { codigo: 'C020', nombre: 'Valencia', codigoEstado: '007' },
+    { codigo: 'C021', nombre: 'Puerto Cabello', codigoEstado: '007' },
+    { codigo: 'C022', nombre: 'Guacara', codigoEstado: '007' },
+    { codigo: 'C023', nombre: 'Naguanagua', codigoEstado: '007' },
+    { codigo: 'C024', nombre: 'San Carlos', codigoEstado: '008' },
+    { codigo: 'C025', nombre: 'Tinaquillo', codigoEstado: '008' },
+    { codigo: 'C026', nombre: 'Tucupita', codigoEstado: '009' },
+    { codigo: 'C027', nombre: 'Gran Roque (Los Roques)', codigoEstado: '010' },
+    { codigo: 'C028', nombre: 'Caracas', codigoEstado: '011' },
+    { codigo: 'C029', nombre: 'Coro', codigoEstado: '012' },
+    { codigo: 'C030', nombre: 'Punto Fijo', codigoEstado: '012' },
+    { codigo: 'C031', nombre: 'San Juan de los Morros', codigoEstado: '013' },
+    { codigo: 'C032', nombre: 'Valle de la Pascua', codigoEstado: '013' },
+    { codigo: 'C033', nombre: 'Calabozo', codigoEstado: '013' },
+    { codigo: 'C034', nombre: 'Barquisimeto', codigoEstado: '014' },
+    { codigo: 'C035', nombre: 'Cabudare', codigoEstado: '014' },
+    { codigo: 'C036', nombre: 'Carora', codigoEstado: '014' },
+    { codigo: 'C037', nombre: 'Mérida', codigoEstado: '015' },
+    { codigo: 'C038', nombre: 'El Vigía', codigoEstado: '015' },
+    { codigo: 'C039', nombre: 'Tovar', codigoEstado: '015' },
+    { codigo: 'C040', nombre: 'Los Teques', codigoEstado: '016' },
+    { codigo: 'C041', nombre: 'Guarenas', codigoEstado: '016' },
+    { codigo: 'C042', nombre: 'Guatire', codigoEstado: '016' },
+    { codigo: 'C043', nombre: 'Charallave', codigoEstado: '016' },
+    { codigo: 'C044', nombre: 'Maturín', codigoEstado: '017' },
+    { codigo: 'C045', nombre: 'Caripe', codigoEstado: '017' },
+    { codigo: 'C046', nombre: 'Porlamar', codigoEstado: '018' },
+    { codigo: 'C047', nombre: 'La Asunción', codigoEstado: '018' },
+    { codigo: 'C048', nombre: 'Pampatar', codigoEstado: '018' },
+    { codigo: 'C049', nombre: 'Guanare', codigoEstado: '019' },
+    { codigo: 'C050', nombre: 'Acarigua', codigoEstado: '019' },
+    { codigo: 'C051', nombre: 'Cumaná', codigoEstado: '020' },
+    { codigo: 'C052', nombre: 'Carúpano', codigoEstado: '020' },
+    { codigo: 'C053', nombre: 'San Cristóbal', codigoEstado: '021' },
+    { codigo: 'C054', nombre: 'Tábaiba', codigoEstado: '021' },
+    { codigo: 'C055', nombre: 'Rubio', codigoEstado: '021' },
+    { codigo: 'C056', nombre: 'Trujillo', codigoEstado: '022' },
+    { codigo: 'C057', nombre: 'Valera', codigoEstado: '022' },
+    { codigo: 'C058', nombre: 'La Guaira', codigoEstado: '023' },
+    { codigo: 'C059', nombre: 'Maiquetía', codigoEstado: '023' },
+    { codigo: 'C060', nombre: 'Catia La Mar', codigoEstado: '023' },
+    { codigo: 'C061', nombre: 'San Felipe', codigoEstado: '024' },
+    { codigo: 'C062', nombre: 'Yaritagua', codigoEstado: '024' },
+    { codigo: 'C063', nombre: 'Maracaibo', codigoEstado: '025' },
+    { codigo: 'C064', nombre: 'Cabimas', codigoEstado: '025' },
+    { codigo: 'C065', nombre: 'Ciudad Ojeda', codigoEstado: '025' }
   ];
 
   constructor(
     private personaService: PersonaService,
-    private fb: FormBuilder,
+    private fb: FormBuilder
   ) {
     this.inicializarFormulario();
   }
 
   ngOnInit(): void {
-    // Escuchar la lista de personas del servicio en tiempo real
-    this.personaService.getPersonas().subscribe({
+    this.personaService.personas$.subscribe({
       next: (data) => (this.listaPersonas = data),
-      error: (err) => console.error('Error al cargar personas:', err),
+      error: (err) => console.error('Error en el estado local de personas:', err),
+    });
+
+    this.cargarPersonasDesdeBackend();
+    this.escucharCambiosEstado();
+  }
+
+  escucharCambiosEstado(): void {
+    this.personaForm.get('direccion.provinciaEstado')?.valueChanges.subscribe((codigoEstado) => {
+      if (codigoEstado) {
+        this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === codigoEstado);
+
+        // Si la ciudad actual no pertenece al nuevo estado seleccionado, reseteamos el combo de ciudad
+        const ciudadActual = this.personaForm.get('direccion.ciudad')?.value;
+        const perteneceAlNuevoEstado = this.ciudadesFiltradas.some(c => c.codigo === ciudadActual);
+
+        if (!perteneceAlNuevoEstado) {
+          this.personaForm.get('direccion.ciudad')?.setValue('');
+        }
+      } else {
+        this.ciudadesFiltradas = [];
+        this.personaForm.get('direccion.ciudad')?.setValue('');
+      }
     });
   }
 
-  // Estructuramos el formulario emparejado con nuestro Modelo
+  cargarPersonasDesdeBackend(): void {
+    this.personaService.cargarPersonas().subscribe({
+      error: (err) => console.error('Error al cargar personas desde el Backend:', err)
+    });
+  }
+
   inicializarFormulario(): void {
     const validadoresTexto = [
       Validators.required,
       Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+$/),
     ];
+
+    // Precargar ciudades para '011' (Distrito Capital) antes de instanciar el FormGroup
+    this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === '011');
 
     this.personaForm = this.fb.group({
       nombre: ['', [...validadoresTexto]],
@@ -102,7 +183,6 @@ export class PersonaComponent implements OnInit {
         [
           Validators.required,
           Validators.pattern(/^(V|E|J)-(91000000|[0-9]?\d{8}|[0-9]\d{6})$/),
-          //Validators.pattern(/^(V|E|J)-(91000000|[0-9]?\d{8}|[0-9]\d{6})$/)
         ],
       ],
       email: [
@@ -118,8 +198,7 @@ export class PersonaComponent implements OnInit {
         '+584',
         [Validators.required, Validators.pattern(/^\+58(412|416|424|426)\d{7}$/)],
       ],
-      activo: [true], // Por defecto activo
-      // Desglosamos la dirección como un sub-grupo reactivo
+      activo: [true],
       direccion: this.fb.group({
         codigoPostal: [
           '1050',
@@ -129,30 +208,16 @@ export class PersonaComponent implements OnInit {
           'Sabana Grande',
           [Validators.required, Validators.pattern(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ .,#/\-]+$/)],
         ],
-        ciudad: [
-          'Caracas',
-          [
-            Validators.required,
-            (control) =>
-              this.ciudadesVenezuela.includes(control.value) ? null : { ciudadInvalida: true },
-          ],
-        ],
-        provinciaEstado: [
-          'Distrito Capital',
-          [
-            Validators.required,
-            (control) =>
-              this.estadosVenezuela.includes(control.value) ? null : { estadoInvalido: true },
-          ],
-        ],
-        pais: ['Venezuela', [Validators.required, Validators.pattern(/^Venezuela$/)]],
+        provinciaEstado: ['011', [Validators.required]],
+        ciudad: ['C028', [Validators.required]],
+        pais: ['Venezuela', [Validators.required]],
       }),
     });
   }
 
-  // Se ejecuta al pulsar "Guardar" tanto para Alta como para Edición
-  guardarPersona(): void {
-    // 1. Una única validación limpia. Si es inválido, mostramos la alerta y salimos.
+  guardarPersona(event?: Event): void {
+    if (event) event.preventDefault();
+
     if (this.personaForm.invalid) {
       alert('Por favor, rellena todos los campos obligatorios o corrige los errores.');
       return;
@@ -161,43 +226,74 @@ export class PersonaComponent implements OnInit {
     const datosFormulario = this.personaForm.value;
 
     if (this.editandoId !== null) {
-      // Si estamos editando, llamamos a actualizar
-      this.personaService.updatePersona(this.editandoId, datosFormulario);
-      this.editandoId = null;
+      this.personaService.updatePersona(this.editandoId, datosFormulario).subscribe({
+        next: () => {
+          alert('Persona actualizada con éxito');
+          this.resetearFormulario();
+        },
+        error: (err) => alert(`Error al actualizar: ${err.error?.message || err.message}`)
+      });
     } else {
-      // Si no, incluimos una nueva persona
-      this.personaService.addPersona(datosFormulario);
+      this.personaService.addPersona(datosFormulario).subscribe({
+        next: () => {
+          alert('Persona creada con éxito');
+          this.resetearFormulario();
+        },
+        error: (err) => alert(`Error al guardar: ${err.error?.message || err.message}`)
+      });
     }
-
-    // 💡 2. CORRECCIÓN CRÍTICA: Al resetear, mantenemos los valores por defecto obligatorios
-    this.personaForm.reset({
-      telefonoCelular: '+58',
-      activo: true,
-      direccion: {
-        pais: 'Venezuela',
-        provinciaEstado: '', // Se limpian pero quedan listos
-        ciudad: '',
-      },
-    });
   }
 
-  // Carga los datos de la persona en el formulario para modificarlos
   prepararEditar(persona: Persona): void {
     this.editandoId = persona.id;
-    // patchValue rellena automáticamente todos los campos que coincidan en estructura
+    const codEstado = persona.direccion?.provinciaEstado;
+    if (codEstado) {
+      this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === codEstado);
+    }
     this.personaForm.patchValue(persona);
   }
 
   eliminarPersona(id: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar a esta persona?')) {
-      this.personaService.deletePersona(id);
-      // Si estábamos editando justo a esa persona, cancelamos la edición
-      if (this.editandoId === id) this.editandoId = null;
+      this.personaService.deletePersona(id).subscribe({
+        next: () => {
+          if (this.editandoId === id) this.editandoId = null;
+        },
+        error: (err) => alert(`Error al eliminar: ${err.error?.message || 'Error en el servidor'}`)
+      });
     }
   }
 
   cancelarEdicion(): void {
     this.editandoId = null;
-    this.personaForm.reset({ activo: true });
+    this.resetearFormulario();
+  }
+
+  obtenerNombreUbicacion(codigo: string, tipo: 'estado' | 'ciudad'): string {
+    if (tipo === 'estado') {
+      return this.estadosVenezuela.find(e => e.codigo === codigo)?.nombre || codigo;
+    } else {
+      return this.ciudadesVenezuela.find(c => c.codigo === codigo)?.nombre || codigo;
+    }
+  }
+
+  private resetearFormulario(): void {
+    this.editandoId = null;
+    this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === '011');
+
+    this.personaForm.reset({
+      cedula: 'V-',
+      email: '@gmail.com',
+      telefonoFijo: '+58212',
+      telefonoCelular: '+584',
+      activo: true,
+      direccion: {
+        pais: 'Venezuela',
+        provinciaEstado: '011',
+        ciudad: 'C028',
+        codigoPostal: '1050',
+        urbanizacion: 'Sabana Grande'
+      }
+    });
   }
 }

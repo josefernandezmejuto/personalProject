@@ -1,58 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Articulo } from '../models/articulo.model';
-
 @Injectable({
   providedIn: 'root'
 })
 export class ArticuloService {
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api/articulos';
 
-  private listaArticulos: Articulo[] = [
-    {
-      id: 1,
-      codigo: 'ART-001',
-      descripcion: 'Teclado Mecánico RGB',
-      categoria: 'Periféricos',
-      precioUnitario: 45.00,
-      descuento: 5,
-      stockActual: 20,
-      stockMinimo: 5,
-      activo: true,
-      fechaCreacion: new Date()
-    },
-    {
-      id: 2,
-      codigo: 'ART-002',
-      descripcion: 'Monitor 24 Pulgadas Full HD',
-      categoria: 'Pantallas',
-      precioUnitario: 130.00,
-      descuento: 0,
-      stockActual: 8,
-      stockMinimo: 2,
-      activo: true,
-      fechaCreacion: new Date()
-    }
-  ];
-
-  getArticulos(): Articulo[] {
-    return [...this.listaArticulos];
+  getArticulos(): Observable<Articulo[]> {
+    return this.http.get<Articulo[]>(this.apiUrl);
   }
 
-  addArticulo(articulo: Articulo): void {
-    articulo.id = this.listaArticulos.length > 0
-      ? Math.max(...this.listaArticulos.map(a => a.id || 0)) + 1
-      : 1;
-    articulo.fechaCreacion = new Date();
-    this.listaArticulos.push(articulo);
+  addArticulo(articulo: Articulo): Observable<Articulo> {
+    return this.http.post<Articulo>(this.apiUrl, articulo);
   }
 
-  updateArticulo(id: number, articuloActualizado: Articulo): void {
-    const index = this.listaArticulos.findIndex(a => a.id === id);
-    if (index !== -1) {
-      this.listaArticulos[index] = { ...articuloActualizado, id };
-    }
+  updateArticulo(id: number, articulo: Articulo): Observable<Articulo> {
+    return this.http.put<Articulo>(`${this.apiUrl}/${id}`, articulo);
   }
 
-  deleteArticulo(id: number): void {
-    this.listaArticulos = this.listaArticulos.filter(a => a.id !== id);
+  deleteArticulo(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+
 }

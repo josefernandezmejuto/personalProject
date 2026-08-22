@@ -1,0 +1,342 @@
+/* Importar estilos globales de Bootstrap e Iconos */
+@import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
+
+
+/* ==========================================================================
+   CAMBIO DE FONDO A GRIS SUAVE DESCANSADO (Lina/Slate Soft)
+   ========================================================================== */
+
+/* 1. Fondo general de la app */
+body {
+  background-color: #e2e8f0 !important; /* Gris suave neutro en lugar del blanco brillante */
+}
+
+/* 2. Área principal donde cargan las vistas (Router Outlet) */
+.content {
+  flex: 1;
+  background-color: #e2e8f0 !important; /* Fondo descansado para Personas, Facturas e Inventario */
+  overflow-y: auto;
+}
+
+/* 3. Resaltar las tarjetas sobre el nuevo fondo */
+.card-panel {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+
+.content {
+  flex: 1;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+  width: 100%; /* Forzar ocupación total del ancho */
+  padding: 24px; /* Relleno uniforme a los 4 lados */
+}
+
+/* Tus reglas de estilo personalizadas */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   ESTILOS DE DASHBOARD Y LAYOUT PRINCIPAL
+   ========================================================================== */
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Barra Superior */
+.topbar {
+  background-color: #212529;
+  color: #ffffff;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenedor Principal */
+.main-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Menú Lateral (Sidebar) */
+.sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #dee2e6;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 999;
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 15px 0;
+  margin: 0;
+}
+
+.nav-menu li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: #495057;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+.nav-menu li a:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+}
+
+.nav-menu li a.active {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  font-weight: 600;
+  border-left-color: #0d6efd;
+}
+
+.content {
+  flex: 1;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+  width: 100%; /* Forzar ocupación total del ancho */
+  padding: 24px; /* Relleno uniforme a los 4 lados */
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  }
+
+  .sidebar.abierto {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+  }
+}
+
+
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS PARA MÓDULO PERSONAS / TABLAS
+   ========================================================================== */
+.section-subtitle {
+  color: var(--text-muted, #6c757d);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color, #dee2e6);
+  padding-bottom: 6px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;       /* Añade scroll horizontal SOLO a la tabla en teléfonos */
+  -webkit-overflow-scrolling: touch;
+}
+
+.row-disabled {
+  opacity: 0.6;
+  background-color: #f8f9fa;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+
+/* ==========================================================================
+   ESTILOS DE AGRUPACIÓN Y TABLAS (CONTENEDOR DELIMITADO)
+   ========================================================================== */
+.personas-container {
+  width: 100%;             /* Ocupa el 100% en teléfonos o pantallas pequeñas */
+  max-width: 1100px;       /* Limita el ancho en monitores grandes para agrupar */
+  margin: 0 auto;          /* Centra la tarjeta horizontalmente */
+  padding: 16px;           /* Espaciado interno cómodo */
+  box-sizing: border-box;  /* Evita que el padding sume ancho extra */
+}
+
+.grid-3-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.card-panel {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.table-custom th {
+  background-color: #343a40;
+  color: #ffffff;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.table-custom td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .grid-3-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Badges de Estado para Tablas */
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.badge-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.badge-danger {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+/* Agrupar el contenedor de Artículos con la misma amplitud que Personas */
+.personas-container,
+.articulo-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Agrupar el contenedor de Facturas junto a Personas y Artículos */
+.personas-container,
+.articulo-container,
+.facturas-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Tarjeta resumen de totales a la derecha */
+.summary-box {
+  width: 320px;
+  background-color: #ffffff;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* Clases de texto y separadores para formularios de facturas */
+.border-dashed {
+  border-style: dashed !important;
+}
+
+.text-warning-dark {
+  color: #d97706;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Estilo para botón e íconos celestes */
+.btn-info {
+  background-color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+.btn-info:hover {
+  background-color: #31d2f2;
+  border-color: #25cff2;
+}
+
+/* Badge de estado advertencia / pendiente */
+.badge-warning {
+  background-color: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffe69c;
+}

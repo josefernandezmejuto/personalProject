@@ -1,105 +1,90 @@
-<div style="padding: 20px; font-family: Arial, sans-serif;">
+<div class="articulo-container">
 
   <!-- Tarjeta de Formulario -->
-  <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+  <div class="card-panel">
 
-    <h3 style="margin-top: 0; color: #333;">
-      <span *ngIf="editandoId === null">📦 Añadir Nuevo Artículo</span>
-      <span *ngIf="editandoId !== null">✏️ Editar Artículo</span>
+    <!-- Título Formulario -->
+    <h3 class="card-title">
+      <i class="bi" [ngClass]="editandoId !== null ? 'bi-pencil-square' : 'bi-box-seam-fill'"></i>
+      {{ editandoId !== null ? 'Editar Artículo' : 'Añadir Nuevo Artículo' }}
     </h3>
 
     <form [formGroup]="articuloForm" (ngSubmit)="guardarArticulo()">
 
-      <!-- Cuadrícula Principal (3 Columnas) -->
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+      <!-- Primera Fila Inputs (3 Columnas) -->
+      <div class="grid-3-cols mb-2">
 
-        <!-- Código del Artículo -->
+        <!-- Código / SKU -->
         <div>
-          <input type="text" formControlName="codigo" placeholder="Código / SKU (Ej: ART-001) *" style="padding: 8px; width: 100%; box-sizing: border-box;">
-          <div *ngIf="articuloForm.get('codigo')?.errors && articuloForm.get('codigo')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
+          <input type="text" formControlName="codigo" class="form-control" placeholder="Código / SKU (Ej: ART-001) *">
+          <div *ngIf="articuloForm.get('codigo')?.errors && articuloForm.get('codigo')?.dirty" class="text-danger small mt-1">
             <small *ngIf="articuloForm.get('codigo')?.hasError('required')">El código es obligatorio.</small>
             <small *ngIf="articuloForm.get('codigo')?.hasError('pattern')">Solo letras, números y guiones.</small>
           </div>
         </div>
 
-        <!-- Descripción / Nombre del Artículo -->
+        <!-- Descripción -->
         <div>
-          <input type="text" formControlName="descripcion" placeholder="Descripción del Artículo *" style="padding: 8px; width: 100%; box-sizing: border-box;">
-          <div *ngIf="articuloForm.get('descripcion')?.errors && articuloForm.get('descripcion')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
+          <input type="text" formControlName="descripcion" class="form-control" placeholder="Descripción del Artículo *">
+          <div *ngIf="articuloForm.get('descripcion')?.errors && articuloForm.get('descripcion')?.dirty" class="text-danger small mt-1">
             <small *ngIf="articuloForm.get('descripcion')?.hasError('required')">La descripción es obligatoria.</small>
             <small *ngIf="articuloForm.get('descripcion')?.hasError('minlength')">Mínimo 3 caracteres.</small>
           </div>
         </div>
 
-        <!-- Categoría (Desplegable) -->
+        <!-- Categoría -->
         <div>
-          <select formControlName="categoria" style="padding: 8px; width: 100%; box-sizing: border-box;">
+          <select formControlName="categoria" class="form-select">
             <option value="">Seleccione Categoría *</option>
             <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
           </select>
-          <div *ngIf="articuloForm.get('categoria')?.errors && articuloForm.get('categoria')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
+          <div *ngIf="articuloForm.get('categoria')?.errors && articuloForm.get('categoria')?.dirty" class="text-danger small mt-1">
             <small *ngIf="articuloForm.get('categoria')?.hasError('required')">Debe seleccionar una categoría.</small>
           </div>
         </div>
 
+      </div>
+
+      <!-- Segunda Fila Inputs (3 Columnas) -->
+      <div class="grid-3-cols mb-2">
+
         <!-- Precio Unitario -->
         <div>
-          <label style="font-size: 0.8em; color: #666;">Precio Unitario ($) *</label>
-          <input type="number" step="0.01" formControlName="precioUnitario" style="padding: 8px; width: 100%; box-sizing: border-box;">
-          <div *ngIf="articuloForm.get('precioUnitario')?.errors && articuloForm.get('precioUnitario')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
+          <label class="form-label mb-1">Precio Unitario ($) *</label>
+          <input type="number" step="0.01" formControlName="precioUnitario" class="form-control">
+          <div *ngIf="articuloForm.get('precioUnitario')?.errors && articuloForm.get('precioUnitario')?.dirty" class="text-danger small mt-1">
             <small *ngIf="articuloForm.get('precioUnitario')?.hasError('required')">El precio es obligatorio.</small>
             <small *ngIf="articuloForm.get('precioUnitario')?.hasError('min')">Debe ser mayor a 0.</small>
           </div>
         </div>
 
-        <!-- Porcentaje de Descuento -->
+        <!-- Precio Urgente -->
         <div>
-          <label style="font-size: 0.8em; color: #666;">Descuento Máximo (%)</label>
-          <input type="number" formControlName="descuento" style="padding: 8px; width: 100%; box-sizing: border-box;">
-          <div *ngIf="articuloForm.get('descuento')?.errors && articuloForm.get('descuento')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
-            <small *ngIf="articuloForm.get('descuento')?.hasError('max')">El descuento no puede superar el 100%.</small>
-            <small *ngIf="articuloForm.get('descuento')?.hasError('min')">No puede ser negativo.</small>
+          <label class="form-label mb-1">Precio Urgente ($)</label>
+          <input type="number" step="0.01" formControlName="precioUrgente" class="form-control">
+          <div *ngIf="articuloForm.get('precioUrgente')?.errors && articuloForm.get('precioUrgente')?.dirty" class="text-danger small mt-1">
+            <small *ngIf="articuloForm.get('precioUrgente')?.hasError('required')">El precio urgente es obligatorio.</small>
+            <small *ngIf="articuloForm.get('precioUrgente')?.hasError('min')">No puede ser negativo.</small>
           </div>
         </div>
 
-        <!-- Espacio en blanco para cuadrar fila si se desea -->
+        <!-- Columna vacía para balancear el layout en escritorio -->
         <div></div>
-
-        <!-- Stock Actual -->
-        <div>
-          <label style="font-size: 0.8em; color: #666;">Stock Inicial *</label>
-          <input type="number" formControlName="stockActual" style="padding: 8px; width: 100%; box-sizing: border-box;">
-          <div *ngIf="articuloForm.get('stockActual')?.errors && articuloForm.get('stockActual')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
-            <small *ngIf="articuloForm.get('stockActual')?.hasError('required')">El stock es obligatorio.</small>
-            <small *ngIf="articuloForm.get('stockActual')?.hasError('min')">No puede ser negativo.</small>
-          </div>
-        </div>
-
-        <!-- Stock Mínimo (Alerta) -->
-        <div>
-          <label style="font-size: 0.8em; color: #666;">Stock Mínimo (Alerta) *</label>
-          <input type="number" formControlName="stockMinimo" style="padding: 8px; width: 100%; box-sizing: border-box;">
-          <div *ngIf="articuloForm.get('stockMinimo')?.errors && articuloForm.get('stockMinimo')?.dirty" style="color: #dc3545; font-size: 0.8em; margin-top: 2px;">
-            <small *ngIf="articuloForm.get('stockMinimo')?.hasError('required')">El stock mínimo es obligatorio.</small>
-          </div>
-        </div>
 
       </div>
 
       <!-- Checkbox Activo -->
-      <div style="margin-top: 15px;">
-        <label style="cursor: pointer; font-weight: bold;">
-          <input type="checkbox" formControlName="activo"> ¿Artículo Activo para la Venta?
-        </label>
+      <div class="form-check mb-3 mt-3">
+        <input type="checkbox" formControlName="activo" id="activoArticuloCheck" class="form-check-input">
+        <label for="activoArticuloCheck" class="form-check-label fw-bold">¿Artículo Activo para la Venta?</label>
       </div>
 
       <!-- Botones de Acción -->
-      <div style="margin-top: 20px;">
-        <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">
           {{ editandoId !== null ? 'Actualizar Artículo' : 'Guardar Artículo' }}
         </button>
-
-        <button type="button" (click)="limpiarFormulario()" *ngIf="editandoId !== null" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+        <button type="button" (click)="limpiarFormulario()" *ngIf="editandoId !== null" class="btn btn-secondary">
           Cancelar
         </button>
       </div>
@@ -107,61 +92,56 @@
     </form>
   </div>
 
-  <!-- Tabla de Listado de Inventario -->
-  <h3>📋 Inventario de Artículos</h3>
+  <hr class="my-4" />
 
-  <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <thead>
-      <tr style="background-color: #f1f1f1; text-align: left; border-bottom: 2px solid #dee2e6;">
-        <th style="padding: 10px;">Código</th>
-        <th style="padding: 10px;">Descripción</th>
-        <th style="padding: 10px;">Categoría</th>
-        <th style="padding: 10px;">Precio</th>
-        <th style="padding: 10px;">Desc.</th>
-        <th style="padding: 10px;">Stock</th>
-        <th style="padding: 10px;">Estado</th>
-        <th style="padding: 10px; text-align: center;">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let art of listaArticulos" style="border-bottom: 1px solid #dee2e6;">
-        <td style="padding: 10px; font-weight: bold;">{{ art.codigo }}</td>
-        <td style="padding: 10px;">{{ art.descripcion }}</td>
-        <td style="padding: 10px;">{{ art.categoria }}</td>
-        <td style="padding: 10px;">${{ art.precioUnitario | number:'1.2-2' }}</td>
-        <td style="padding: 10px;">{{ art.descuento }}%</td>
+  <!-- Sección Tabla de Registros Agrupada -->
+  <div class="card-panel">
+    <h3 class="card-title mb-3">
+      <i class="bi bi-clipboard-data-fill me-2"></i> Inventario de Artículos
+    </h3>
 
-        <!-- Indicador de Stock con alerta si baja del mínimo -->
-        <td style="padding: 10px;">
-          <span [style.color]="art.stockActual <= art.stockMinimo ? '#dc3545' : '#28a745'" style="font-weight: bold;">
-            {{ art.stockActual }}
-            <small *ngIf="art.stockActual <= art.stockMinimo">(⚠️ Bajo)</small>
-          </span>
-        </td>
+    <div class="table-responsive">
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th style="width: 120px;">Código</th>
+            <th>Descripción</th>
+            <th style="width: 180px;">Categoría</th>
+            <th style="width: 110px;">Precio</th>
+            <th style="width: 110px;">Urgente</th>
+            <th style="width: 110px;">Estado</th>
+            <th style="width: 150px; text-align: center;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let art of listaArticulos" [class.row-disabled]="!art.activo">
+            <td><strong>{{ art.codigo }}</strong></td>
+            <td>{{ art.descripcion }}</td>
+            <td>{{ art.categoria }}</td>
+            <td>${{ art.precioUnitario | number:'1.2-2' }}</td>
+            <td>${{ art.precioUrgente | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [ngClass]="art.activo ? 'badge-success' : 'badge-danger'">
+                {{ art.activo ? 'Disponible' : 'Inactivo' }}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <div class="d-flex justify-content-center gap-1">
+                <button (click)="prepararEditar(art)" class="btn btn-primary btn-sm">Editar</button>
+                <button (click)="eliminarArticulo(art.id!)" class="btn btn-danger btn-sm">Borrar</button>
+              </div>
+            </td>
+          </tr>
 
-        <td style="padding: 10px;">
-          <span [style.background-color]="art.activo ? '#e2f0d9' : '#f8d7da'" [style.color]="art.activo ? '#385723' : '#721c24'" style="padding: 3px 8px; border-radius: 12px; font-size: 0.85em;">
-            {{ art.activo ? 'Disponible' : 'Inactivo' }}
-          </span>
-        </td>
-
-        <!-- Botones Editar / Eliminar -->
-        <td style="padding: 10px; text-align: center;">
-          <button (click)="prepararEditar(art)" style="background-color: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
-            Editar
-          </button>
-          <button (click)="eliminarArticulo(art.id!)" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
-            Borrar
-          </button>
-        </td>
-      </tr>
-
-      <tr *ngFor="let art of listaArticulos.length === 0 ? [1] : []">
-        <td colspan="8" *ngIf="listaArticulos.length === 0" style="padding: 15px; text-align: center; color: #888;">
-          No hay artículos registrados en el inventario.
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <!-- Mensaje en caso de inventario vacío -->
+          <tr *ngIf="listaArticulos.length === 0">
+            <td colspan="7" class="text-center text-muted py-4">
+              No hay artículos registrados en el inventario.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
 </div>
