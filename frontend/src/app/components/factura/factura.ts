@@ -19,13 +19,20 @@ import { ArticuloService } from '../../services/articulo.service';
 })
 export class FacturaComponent implements OnInit, AfterViewInit {
 
-  // 🟢 Captura del elemento select en la vista
-  @ViewChild('clienteSelect') clienteSelectInput!: ElementRef<HTMLSelectElement>;
+  // 🟢 Capturas de elementos del DOM según el patrón estandarizado
+  @ViewChild('campoFocus') campoFocusInput!: ElementRef<HTMLInputElement | HTMLSelectElement>;
+  @ViewChild('articuloSelect') articuloSelectInput!: ElementRef<HTMLInputElement | HTMLSelectElement>;
 
   // Listas generales
   listaFacturas: Factura[] = [];
   listaClientes: Persona[] = [];
+  clientesFiltrados: Persona[] = [];
   listaArticulos: Articulo[] = [];
+  articulosFiltrados: Articulo[] = [];
+
+  // Texto para las cajas de búsqueda
+  textoBusquedaCliente: string = '';
+  textoBusquedaArticulo: string = '';
 
   facturaForm!: FormGroup;
 
@@ -62,13 +69,8 @@ export class FacturaComponent implements OnInit, AfterViewInit {
     this.cargarCatalogos();
   }
 
-  // 🟢 Posiciona el foco en el selector de Cliente tras renderizar la vista
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.clienteSelectInput) {
-        this.clienteSelectInput.nativeElement.focus();
-      }
-    }, 100);
+    setTimeout(() => this.campoFocusInput?.nativeElement?.focus(), 100);
   }
 
   inicializarFormulario(): void {
@@ -79,14 +81,24 @@ export class FacturaComponent implements OnInit, AfterViewInit {
   }
 
   cargarCatalogos(): void {
-    // 1. Cargar historial de facturas
-    this.listaFacturas = this.facturaService.getFacturas();
+    // 1. Suscripción reactiva al listado de facturas
+    this.facturaService.facturas$.subscribe({
+      next: (facturas: Factura[]) => {
+        this.listaFacturas = facturas;
+      },
+      error: (err: any) => console.error('Error al escuchar facturas:', err)
+    });
 
-    // 2. Suscribirse al Observable reactivo del personasSubject
+    // 2. Petición inicial de facturas al backend
+    this.facturaService.cargarFacturas().subscribe({
+      error: (err: any) => console.error('Error al cargar historial de facturas:', err)
+    });
+
+    // 3. Suscripción y carga de Personas / Clientes
     this.personaService.personas$.subscribe({
       next: (personas: Persona[]) => {
-        // Filtramos para mostrar únicamente las personas activas
         this.listaClientes = personas.filter((p: Persona) => p.activo);
+        this.clientesFiltrados = [...this.listaClientes];
       },
       error: (err: any) => console.error('Error al escuchar personas en Factura:', err)
     });
@@ -95,30 +107,96 @@ export class FacturaComponent implements OnInit, AfterViewInit {
       error: (err: any) => console.error('Error al solicitar personas desde Factura:', err)
     });
 
-    // 4. Cargar artículos
+    // 4. Carga de Artículos
     this.articuloService.getArticulos().subscribe({
       next: (articulos: Articulo[]) => {
         this.listaArticulos = articulos.filter((a: Articulo) => a.activo);
+        this.articulosFiltrados = [...this.listaArticulos];
       },
       error: (err: any) => console.error('Error al cargar artículos en Factura:', err)
     });
   }
 
-  alSeleccionarArticulo(): void {
-    if (this.articuloSeleccionadoId) {
-      const art = this.listaArticulos.find(a => a.id === Number(this.articuloSeleccionadoId));
-      if (art) {
-        this.descripcionLinea = art.descripcion;
-      }
+  alBuscarCliente(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valor = input.value.trim().toUpperCase();
+    this.textoBusquedaCliente = input.value;
+
+    if (!valor) {
+      this.clientesFiltrados = [...this.listaClientes];
+      this.facturaForm.patchValue({ clienteId: '' });
+      return;
+    }
+
+    this.clientesFiltrados = this.listaClientes.filter((c) => {
+      const cedulaSinPrefijo = c.cedula.replace(/^(V|E|J)-/i, '').toUpperCase();
+      const cedulaCompleta = c.cedula.toUpperCase();
+      const nombreCompleto = `${c.nombre} ${c.apellidos}`.toUpperCase();
+
+      return (
+        cedulaSinPrefijo.startsWith(valor) ||
+        cedulaCompleta.includes(valor) ||
+        nombreCompleto.includes(valor)
+      );
+    });
+
+    const clienteEncontrado = this.listaClientes.find((c) => {
+      const etiquetaOpcion = `${c.cedula} - ${c.nombre} ${c.apellidos}`.toUpperCase();
+      return (
+        etiquetaOpcion === valor ||
+        c.cedula.toUpperCase() === valor ||
+        c.cedula.replace(/^(V|E|J)-/i, '').toUpperCase() === valor
+      );
+    });
+
+    if (clienteEncontrado) {
+      this.facturaForm.patchValue({ clienteId: clienteEncontrado.id });
     } else {
+      this.facturaForm.patchValue({ clienteId: '' });
+    }
+  }
+
+  // 🟢 BÚSQUEDA DINÁMICA DE ARTÍCULO (Soporta filtrado por Código o Descripción)
+  alBuscarArticulo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valor = input.value.trim().toUpperCase();
+    this.textoBusquedaArticulo = input.value;
+
+    if (!valor) {
+      this.articulosFiltrados = [...this.listaArticulos];
+      this.articuloSeleccionadoId = null;
       this.descripcionLinea = '';
-      this.descuentoLinea = 0;
+      return;
+    }
+
+    // Filtrar por código que empiece con lo escrito o por coincidencia en la descripción
+    this.articulosFiltrados = this.listaArticulos.filter((a) => {
+      const codigo = a.codigo.toUpperCase();
+      const descripcion = a.descripcion.toUpperCase();
+      return codigo.includes(valor) || descripcion.includes(valor);
+    });
+
+    // Validar si el texto ingresado coincide exactamente con alguna opción
+    const articuloEncontrado = this.listaArticulos.find((a) => {
+      const etiquetaFormateada = `${a.codigo} - ${a.descripcion} ($${a.precioUnitario.toFixed(2)})`.toUpperCase();
+      return (
+        etiquetaFormateada === valor ||
+        a.codigo.toUpperCase() === valor
+      );
+    });
+
+    if (articuloEncontrado) {
+      this.articuloSeleccionadoId = articuloEncontrado.id!;
+      this.descripcionLinea = articuloEncontrado.descripcion;
+    } else {
+      this.articuloSeleccionadoId = null;
+      this.descripcionLinea = '';
     }
   }
 
   agregarArticulo(): void {
     if (!this.articuloSeleccionadoId || this.cantidadArticulo <= 0) {
-      alert('Seleccione un artículo válido y una cantidad mayor a 0.');
+      alert('Seleccione un artículo válido de la lista y una cantidad mayor a 0.');
       return;
     }
 
@@ -140,12 +218,20 @@ export class FacturaComponent implements OnInit, AfterViewInit {
       subtotal: subtotalLinea
     });
 
+    // Limpieza de campos de la línea
     this.articuloSeleccionadoId = null;
+    this.textoBusquedaArticulo = '';
+    this.articulosFiltrados = [...this.listaArticulos];
     this.descripcionLinea = '';
     this.cantidadArticulo = 1;
     this.descuentoLinea = 0;
 
     this.recalcularTotales();
+
+    // 🟢 Regresa el cursor al campo de búsqueda de Artículo
+    setTimeout(() => {
+      this.articuloSelectInput?.nativeElement?.focus();
+    }, 50);
   }
 
   eliminarDetalle(index: number): void {
@@ -176,7 +262,7 @@ export class FacturaComponent implements OnInit, AfterViewInit {
 
   guardarFactura(): void {
     if (this.facturaForm.invalid) {
-      alert('Por favor seleccione un cliente.');
+      alert('Por favor seleccione un cliente válido de la lista.');
       return;
     }
 
@@ -185,34 +271,62 @@ export class FacturaComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const cliente = this.listaClientes.find((c: Persona) => c.id === Number(this.facturaForm.value.clienteId));
+    const clienteIdSeleccionado = Number(this.facturaForm.value.clienteId);
+    const cliente = this.listaClientes.find((c: Persona) => c.id === clienteIdSeleccionado);
     if (!cliente) return;
 
-    const nuevaFactura: Factura = {
+    // 🟢 ESTRUCTURA ALINEADA CON FacturaDTO DE SPRING BOOT
+    const nuevaFactura = {
       numeroFactura: this.facturaService.generarNumeroFactura(),
       fechaEmision: new Date(),
+      clienteId: clienteIdSeleccionado,
       cliente,
-      detalles: [...this.detallesActuales],
+      detalles: this.detallesActuales.map(item => ({
+        articuloId: item.articulo.id,
+        // 🟢 1. Renombrado a 'descripcionPersonalizada' (como lo espera DetalleFacturaDTO)
+        descripcionPersonalizada: item.articulo.descripcion,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        descuento: item.descuento,
+        subtotal: item.subtotal
+      })),
       subtotal: this.subtotal,
       montoDescuentoTotal: this.montoDescuentoTotal,
-      aplicaProntoPago: this.aplicaProntoPago,
-      montoProntoPago: this.montoProntoPago,
+
+      // 🟢 2. Valores explícitos para Pronto Pago
+      aplicaProntoPago: Boolean(this.aplicaProntoPago),
+      porcentajeProntoPago: this.aplicaProntoPago ? this.porcentajeProntoPago : 0,
+      montoProntoPago: this.aplicaProntoPago ? this.montoProntoPago : 0,
+
       montoIva: this.montoIva,
       total: this.total,
-      estado: 'Pagada'
+      estado: 'Pagada' as const
     };
 
-    this.facturaService.addFactura(nuevaFactura);
-    this.cargarCatalogos();
-    this.limpiarFormulario();
-    alert('Factura generada exitosamente.');
+
+
+
+    this.facturaService.addFactura(nuevaFactura as any).subscribe({
+      next: () => {
+        alert('✅ Factura guardada en la base de datos exitosamente.');
+        this.limpiarFormulario();
+      },
+      error: (err: any) => alert(`Error al guardar factura: ${err.error?.message || err.message}`)
+    });
   }
+
 
   limpiarFormulario(): void {
     this.facturaForm.reset({
       numeroFactura: this.facturaService.generarNumeroFactura(),
       clienteId: ''
     });
+    this.textoBusquedaCliente = '';
+    this.clientesFiltrados = [...this.listaClientes];
+
+    this.textoBusquedaArticulo = '';
+    this.articulosFiltrados = [...this.listaArticulos];
+
     this.detallesActuales = [];
     this.articuloSeleccionadoId = null;
     this.descripcionLinea = '';
@@ -222,16 +336,17 @@ export class FacturaComponent implements OnInit, AfterViewInit {
     this.montoProntoPago = 0;
     this.recalcularTotales();
 
-    // 🟢 Regresa el foco a Cliente tras guardar/limpiar
-    if (this.clienteSelectInput) {
-      this.clienteSelectInput.nativeElement.focus();
-    }
+    this.campoFocusInput?.nativeElement?.focus();
   }
 
   anularFactura(id: number): void {
     if (confirm('¿Desea anular esta factura?')) {
-      this.facturaService.anularFactura(id);
-      this.cargarCatalogos();
+      // 🟢 ANULACIÓN HTTP (PUT)
+      this.facturaService.anularFactura(id).subscribe({
+        next: () => console.log('✅ Factura anulada correctamente'),
+        error: (err: any) => alert(`Error al anular la factura: ${err.error?.message || err.message}`)
+      });
     }
   }
+
 }

@@ -17,41 +17,69 @@
         </div>
 
         <div class="col-md-8">
-          <label class="form-label">Cliente *</label>
-          <select #clienteSelect formControlName="clienteId" class="form-select">
-            <option value="">-- Seleccione un Cliente --</option>
-            <option *ngFor="let c of listaClientes" [value]="c.id">
-              {{ c.cedula }} - {{ c.nombre }} {{ c.apellidos }}
-            </option>
-          </select>
+          <label class="form-label">Cliente (Cédula o Nombre) *</label>
+
+          <!-- Campo de búsqueda de cliente -->
+          <input
+            #campoFocus
+            type="text"
+            class="form-control"
+            placeholder="Escriba la cédula (ej. 6916...) o nombre del cliente..."
+            [value]="textoBusquedaCliente"
+            (input)="alBuscarCliente($event)"
+            list="clientesDatalist"
+          />
+
+          <!-- Lista con opciones filtradas -->
+          <datalist id="clientesDatalist">
+            <option
+              *ngFor="let c of clientesFiltrados"
+              [value]="c.cedula + ' - ' + c.nombre + ' ' + c.apellidos"
+            ></option>
+          </datalist>
+
           <div
-            *ngIf="facturaForm.get('clienteId')?.errors && facturaForm.get('clienteId')?.dirty"
+            *ngIf="facturaForm.get('clienteId')?.errors && facturaForm.get('clienteId')?.touched"
             class="text-danger small mt-1"
           >
-            <small>Debe seleccionar un cliente obligatorio.</small>
+            <small>Debe seleccionar un cliente válido de la lista.</small>
           </div>
         </div>
       </div>
 
-      <!-- Reemplazar el <div> con border-dashed por este bloque limpio: -->
+      <!-- Sección Añadir Ítems -->
       <div class="pt-3 mb-3" style="border-top: 1px dashed #cccccc">
         <h5 class="section-subtitle mb-3"><i class="bi bi-cart-plus me-1"></i> Añadir Ítems</h5>
 
         <div class="row g-2 align-items-end mb-3">
-          <!-- 1. Desplegable de Artículo -->
+          <!-- 1. Desplegable de Artículo con #articuloSelect -->
+
           <div class="col-md-4">
             <label class="form-label mb-1">Artículo *</label>
-            <select
-              [(ngModel)]="articuloSeleccionadoId"
-              (change)="alSeleccionarArticulo()"
-              [ngModelOptions]="{ standalone: true }"
-              class="form-select"
-            >
-              <option [ngValue]="null">-- Seleccione Artículo --</option>
-              <option *ngFor="let a of listaArticulos" [ngValue]="a.id">
-                {{ a.codigo }} - {{ a.descripcion }} (${{ a.precioUnitario | number: '1.2-2' }})
-              </option>
-            </select>
+            <input
+              #articuloSelect
+              type="text"
+              class="form-control"
+              placeholder="Escriba código (ej. TINT-0) o nombre..."
+              [value]="textoBusquedaArticulo"
+              (input)="alBuscarArticulo($event)"
+              list="articulosDatalist"
+            />
+
+            <!-- Lista de opciones filtradas -->
+            <datalist id="articulosDatalist">
+              <option
+                *ngFor="let a of articulosFiltrados"
+                [value]="
+                  a.codigo +
+                  ' - ' +
+                  a.descripcion +
+                  ' ($' +
+                  (a.precioUnitario | number: '1.2-2') +
+                  ')'
+                "
+              ></option>
+            </datalist>
           </div>
 
           <!-- 2. Descripción Editable -->
