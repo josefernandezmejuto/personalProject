@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // <
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Articulo } from '../../models/articulo.model';
 import { ArticuloService } from '../../services/articulo.service';
@@ -11,12 +11,12 @@ import { ArticuloService } from '../../services/articulo.service';
   templateUrl: './articulo.html',
   styleUrl: './articulo.css'
 })
-export class ArticuloComponent implements OnInit {
+export class ArticuloComponent implements OnInit, AfterViewInit {
   listaArticulos: Articulo[] = [];
   articuloForm!: FormGroup;
   editandoId: number | null = null;
 
-  categorias: string[] = ['Ropa superior', 'Ropa inferior', 'Vestidos y prendas completas', 'Ropa interior y de dormir', 'Ropa infantil', 'Prendas especiales', 'Dormitorio', 'Baño', 'Cocina y comedor', 'Salón y decoración', 'Accesorios', 'Calzado'];
+  @ViewChild('campoFocus') campoFocusInput!: ElementRef<HTMLInputElement | HTMLSelectElement>;
 
   constructor(
     private articuloService: ArticuloService,
@@ -29,15 +29,30 @@ export class ArticuloComponent implements OnInit {
     this.cargarArticulos();
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.campoFocusInput?.nativeElement?.focus(), 100);
+  }
+
+  private resetearFormulario(): void {
+    this.editandoId = null;
+    this.articuloForm.reset({
+      precioUnitario: 0,
+      precioUrgente: 0,
+      stockActual: 100,
+      stockMinimo: 5,
+      activo: true
+    });
+    this.campoFocusInput?.nativeElement?.focus();
+  }
+
   inicializarFormulario(): void {
     this.articuloForm = this.fb.group({
       codigo: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9\-]+$/)]],
       descripcion: ['', [Validators.required, Validators.minLength(3)]],
-      categoria: ['', [Validators.required]],
       precioUnitario: [0, [Validators.required, Validators.min(0.01)]],
       precioUrgente: [0, [Validators.required, Validators.min(0.01)]],
-      stockActual: [0], // Sin validadores requeridos en interfaz
-      stockMinimo: [0],   // Sin validadores requeridos en interfaz
+      stockActual: [100],
+      stockMinimo: [5],
       activo: [true]
     });
   }
@@ -48,7 +63,7 @@ export class ArticuloComponent implements OnInit {
         this.listaArticulos = articulos;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('❌ Error al cargar inventario:', err)
+      error: (err: any) => console.error('❌ Error al cargar inventario:', err)
     });
   }
 
@@ -59,6 +74,22 @@ export class ArticuloComponent implements OnInit {
     }
 
     const datos: Articulo = this.articuloForm.value;
+    const codigoIngresado = datos.codigo.trim().toUpperCase();
+
+    // 🟢 VALIDACIÓN DE CÓDIGO ÚNICO
+    const codigoExiste = this.listaArticulos.some((art) => {
+      const mismoCodigo = art.codigo.trim().toUpperCase() === codigoIngresado;
+      if (this.editandoId !== null) {
+        // En edición, se ignora el artículo que se está editando actualmente
+        return mismoCodigo && art.id !== this.editandoId;
+      }
+      return mismoCodigo;
+    });
+
+    if (codigoExiste) {
+      alert(`El código de artículo "${codigoIngresado}" ya se encuentra registrado. Por favor ingrese uno diferente.`);
+      return;
+    }
 
     if (this.editandoId !== null) {
       // Editar / Actualizar (PUT)
@@ -66,9 +97,9 @@ export class ArticuloComponent implements OnInit {
         next: (artActualizado) => {
           console.log('✅ Artículo actualizado:', artActualizado);
           this.cargarArticulos();
-          this.limpiarFormulario();
+          this.resetearFormulario();
         },
-        error: (err) => console.error('❌ Error al actualizar artículo:', err)
+        error: (err: any) => console.error('❌ Error al actualizar artículo:', err)
       });
     } else {
       // Crear nuevo (POST)
@@ -76,28 +107,21 @@ export class ArticuloComponent implements OnInit {
         next: (nuevoArt) => {
           console.log('✅ Artículo guardado en la base de datos:', nuevoArt);
           this.cargarArticulos();
-          this.limpiarFormulario();
+          this.resetearFormulario();
         },
-        error: (err) => console.error('❌ Error al guardar artículo:', err)
+        error: (err: any) => console.error('❌ Error al guardar artículo:', err)
       });
     }
   }
 
   limpiarFormulario(): void {
-    this.editandoId = null;
-    this.articuloForm.reset();
-    this.articuloForm.patchValue({
-      precioUnitario: 0,
-      precioUrgente: 0,
-      stockActual: 100,
-      stockMinimo: 5,
-      activo: true
-    });
+    this.resetearFormulario();
   }
 
   prepararEditar(articulo: Articulo): void {
     this.editandoId = articulo.id!;
     this.articuloForm.patchValue(articulo);
+    this.campoFocusInput?.nativeElement?.focus();
   }
 
   eliminarArticulo(id: number): void {
@@ -106,8 +130,9 @@ export class ArticuloComponent implements OnInit {
         next: () => {
           console.log('✅ Artículo eliminado correctamente');
           this.cargarArticulos();
+          this.resetearFormulario();
         },
-        error: (err) => console.error('❌ Error al eliminar artículo:', err)
+        error: (err: any) => console.error('❌ Error al eliminar artículo:', err)
       });
     }
   }

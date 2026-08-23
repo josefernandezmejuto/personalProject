@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'; // 👈 Se incluye OnInit
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -17,7 +17,10 @@ import { ArticuloService } from '../../services/articulo.service';
   templateUrl: './factura.html',
   styleUrl: './factura.css'
 })
-export class FacturaComponent implements OnInit {
+export class FacturaComponent implements OnInit, AfterViewInit {
+
+  // 🟢 Captura del elemento select en la vista
+  @ViewChild('clienteSelect') clienteSelectInput!: ElementRef<HTMLSelectElement>;
 
   // Listas generales
   listaFacturas: Factura[] = [];
@@ -59,6 +62,15 @@ export class FacturaComponent implements OnInit {
     this.cargarCatalogos();
   }
 
+  // 🟢 Posiciona el foco en el selector de Cliente tras renderizar la vista
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      if (this.clienteSelectInput) {
+        this.clienteSelectInput.nativeElement.focus();
+      }
+    }, 100);
+  }
+
   inicializarFormulario(): void {
     this.facturaForm = this.fb.group({
       numeroFactura: [{ value: this.facturaService.generarNumeroFactura(), disabled: true }],
@@ -67,23 +79,29 @@ export class FacturaComponent implements OnInit {
   }
 
   cargarCatalogos(): void {
+    // 1. Cargar historial de facturas
     this.listaFacturas = this.facturaService.getFacturas();
 
-    //this.personaService.getPersonas().subscribe((personas: Persona[]) => {
-    //  this.listaClientes = personas.filter((p: Persona) => p.activo);
-    //});
-
+    // 2. Suscribirse al Observable reactivo del personasSubject
     this.personaService.personas$.subscribe({
       next: (personas: Persona[]) => {
-        // Tu lógica actual para procesar o asignar la lista de personas
+        // Filtramos para mostrar únicamente las personas activas
+        this.listaClientes = personas.filter((p: Persona) => p.activo);
       },
-      error: (err) => console.error('Error al escuchar personas en Factura:', err)
+      error: (err: any) => console.error('Error al escuchar personas en Factura:', err)
     });
 
-    const articulos = this.articuloService.getArticulos();
-    if (Array.isArray(articulos)) {
-      this.listaArticulos = articulos.filter((a: Articulo) => a.activo);
-    }
+    this.personaService.cargarPersonas().subscribe({
+      error: (err: any) => console.error('Error al solicitar personas desde Factura:', err)
+    });
+
+    // 4. Cargar artículos
+    this.articuloService.getArticulos().subscribe({
+      next: (articulos: Articulo[]) => {
+        this.listaArticulos = articulos.filter((a: Articulo) => a.activo);
+      },
+      error: (err: any) => console.error('Error al cargar artículos en Factura:', err)
+    });
   }
 
   alSeleccionarArticulo(): void {
@@ -203,6 +221,11 @@ export class FacturaComponent implements OnInit {
     this.aplicaProntoPago = false;
     this.montoProntoPago = 0;
     this.recalcularTotales();
+
+    // 🟢 Regresa el foco a Cliente tras guardar/limpiar
+    if (this.clienteSelectInput) {
+      this.clienteSelectInput.nativeElement.focus();
+    }
   }
 
   anularFactura(id: number): void {

@@ -11,7 +11,7 @@
       <!-- Primera Fila Inputs -->
       <div class="grid-3-cols mb-2">
         <div>
-          <input type="text" formControlName="nombre" class="form-control" placeholder="Nombre *" />
+          <input #campoFocus type="text" formControlName="nombre" class="form-control" placeholder="Nombre *" />
           <div
             *ngIf="personaForm.get('nombre')?.touched && personaForm.get('nombre')?.errors"
             class="text-danger small mt-1"

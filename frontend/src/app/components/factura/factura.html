@@ -18,7 +18,7 @@
 
         <div class="col-md-8">
           <label class="form-label">Cliente *</label>
-          <select formControlName="clienteId" class="form-select">
+          <select #clienteSelect formControlName="clienteId" class="form-select">
             <option value="">-- Seleccione un Cliente --</option>
             <option *ngFor="let c of listaClientes" [value]="c.id">
               {{ c.cedula }} - {{ c.nombre }} {{ c.apellidos }}

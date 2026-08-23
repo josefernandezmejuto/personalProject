@@ -16,7 +16,7 @@
 
         <!-- Código / SKU -->
         <div>
-          <input type="text" formControlName="codigo" class="form-control" placeholder="Código / SKU (Ej: ART-001) *">
+          <input #campoFocus type="text" formControlName="codigo" class="form-control" placeholder="Código / SKU (Ej: ART-001) *">
           <div *ngIf="articuloForm.get('codigo')?.errors && articuloForm.get('codigo')?.dirty" class="text-danger small mt-1">
             <small *ngIf="articuloForm.get('codigo')?.hasError('required')">El código es obligatorio.</small>
             <small *ngIf="articuloForm.get('codigo')?.hasError('pattern')">Solo letras, números y guiones.</small>
@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <!-- Categoría -->
+        <!-- Categoría
         <div>
           <select formControlName="categoria" class="form-select">
             <option value="">Seleccione Categoría *</option>
@@ -42,7 +42,7 @@
             <small *ngIf="articuloForm.get('categoria')?.hasError('required')">Debe seleccionar una categoría.</small>
           </div>
         </div>
-
+        -->
       </div>
 
       <!-- Segunda Fila Inputs (3 Columnas) -->
@@ -117,7 +117,6 @@
           <tr *ngFor="let art of listaArticulos" [class.row-disabled]="!art.activo">
             <td><strong>{{ art.codigo }}</strong></td>
             <td>{{ art.descripcion }}</td>
-            <td>{{ art.categoria }}</td>
             <td>${{ art.precioUnitario | number:'1.2-2' }}</td>
             <td>${{ art.precioUrgente | number:'1.2-2' }}</td>
             <td>

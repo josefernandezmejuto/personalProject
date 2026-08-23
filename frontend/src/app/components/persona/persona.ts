@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PersonaService } from '../../services/persona.service';
@@ -22,11 +22,13 @@ export interface Ciudad {
   templateUrl: './persona.html',
   styleUrls: ['./persona.css'],
 })
-export class PersonaComponent implements OnInit {
+export class PersonaComponent implements OnInit, AfterViewInit {
   listaPersonas: Persona[] = [];
   personaForm!: FormGroup;
   editandoId: number | null = null;
   ciudadesFiltradas: Ciudad[] = [];
+
+  @ViewChild('campoFocus') campoFocusInput!: ElementRef<HTMLInputElement | HTMLSelectElement>;
 
   estadosVenezuela: Estado[] = [
     { codigo: '001', nombre: 'Amazonas' },
@@ -134,11 +136,15 @@ export class PersonaComponent implements OnInit {
   ngOnInit(): void {
     this.personaService.personas$.subscribe({
       next: (data) => (this.listaPersonas = data),
-      error: (err) => console.error('Error en el estado local de personas:', err),
+      error: (err: any) => console.error('Error en el estado local de personas:', err),
     });
 
     this.cargarPersonasDesdeBackend();
     this.escucharCambiosEstado();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.campoFocusInput?.nativeElement?.focus(), 100);
   }
 
   escucharCambiosEstado(): void {
@@ -146,7 +152,6 @@ export class PersonaComponent implements OnInit {
       if (codigoEstado) {
         this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === codigoEstado);
 
-        // Si la ciudad actual no pertenece al nuevo estado seleccionado, reseteamos el combo de ciudad
         const ciudadActual = this.personaForm.get('direccion.ciudad')?.value;
         const perteneceAlNuevoEstado = this.ciudadesFiltradas.some(c => c.codigo === ciudadActual);
 
@@ -162,7 +167,7 @@ export class PersonaComponent implements OnInit {
 
   cargarPersonasDesdeBackend(): void {
     this.personaService.cargarPersonas().subscribe({
-      error: (err) => console.error('Error al cargar personas desde el Backend:', err)
+      error: (err: any) => console.error('Error al cargar personas desde el Backend:', err)
     });
   }
 
@@ -172,7 +177,6 @@ export class PersonaComponent implements OnInit {
       Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+$/),
     ];
 
-    // Precargar ciudades para '011' (Distrito Capital) antes de instanciar el FormGroup
     this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === '011');
 
     this.personaForm = this.fb.group({
@@ -224,6 +228,22 @@ export class PersonaComponent implements OnInit {
     }
 
     const datosFormulario = this.personaForm.value;
+    const cedulaIngresada = datosFormulario.cedula.trim().toUpperCase();
+
+    // 🟢 VALIDACIÓN DE CÉDULA ÚNICA
+    const cedulaExiste = this.listaPersonas.some((persona) => {
+      const mismaCedula = persona.cedula.trim().toUpperCase() === cedulaIngresada;
+      if (this.editandoId !== null) {
+        // En modo edición ignora a la persona que se está modificando actualmente
+        return mismaCedula && persona.id !== this.editandoId;
+      }
+      return mismaCedula;
+    });
+
+    if (cedulaExiste) {
+      alert(`La cédula "${cedulaIngresada}" ya se encuentra registrada a nombre de otra persona.`);
+      return;
+    }
 
     if (this.editandoId !== null) {
       this.personaService.updatePersona(this.editandoId, datosFormulario).subscribe({
@@ -231,7 +251,7 @@ export class PersonaComponent implements OnInit {
           alert('Persona actualizada con éxito');
           this.resetearFormulario();
         },
-        error: (err) => alert(`Error al actualizar: ${err.error?.message || err.message}`)
+        error: (err: any) => alert(`Error al actualizar: ${err.error?.message || err.message}`)
       });
     } else {
       this.personaService.addPersona(datosFormulario).subscribe({
@@ -239,7 +259,7 @@ export class PersonaComponent implements OnInit {
           alert('Persona creada con éxito');
           this.resetearFormulario();
         },
-        error: (err) => alert(`Error al guardar: ${err.error?.message || err.message}`)
+        error: (err: any) => alert(`Error al guardar: ${err.error?.message || err.message}`)
       });
     }
   }
@@ -251,6 +271,7 @@ export class PersonaComponent implements OnInit {
       this.ciudadesFiltradas = this.ciudadesVenezuela.filter(c => c.codigoEstado === codEstado);
     }
     this.personaForm.patchValue(persona);
+    this.campoFocusInput?.nativeElement?.focus();
   }
 
   eliminarPersona(id: number): void {
@@ -259,13 +280,12 @@ export class PersonaComponent implements OnInit {
         next: () => {
           if (this.editandoId === id) this.editandoId = null;
         },
-        error: (err) => alert(`Error al eliminar: ${err.error?.message || 'Error en el servidor'}`)
+        error: (err: any) => alert(`Error al eliminar: ${err.error?.message || 'Error en el servidor'}`)
       });
     }
   }
 
   cancelarEdicion(): void {
-    this.editandoId = null;
     this.resetearFormulario();
   }
 
@@ -295,5 +315,6 @@ export class PersonaComponent implements OnInit {
         urbanizacion: 'Sabana Grande'
       }
     });
+    this.campoFocusInput?.nativeElement?.focus();
   }
 }
