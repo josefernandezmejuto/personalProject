@@ -82,3 +82,9 @@ USER 1001
 
 # Arrancar NGINX
 CMD ["nginx", "-g", "daemon off;"]
+
+# cd ~/Documents/VisualStudioCode/personalProject/frontend
+# docker stop frontend-angular
+# docker rm frontend-angular
+# docker build -t frontend-angular:1.0 .
+# docker run -d --name frontend-angular -p 4200:8080 frontend-angular:1.0

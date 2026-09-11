@@ -231,3 +231,27 @@ INSERT INTO ARTICULOS (ACTIVO, CODIGO, DESCRIPCION, DESCUENTO, PRECIO_UNITARIO, 
 (TRUE, 'TINT-100', 'Bolso de Tela / Cuero', 0.0, 16.00, 22.40, 30);
 
 
+
+
+
+INSERT INTO PERSONAS (ACTIVO, APELLIDOS, CEDULA, CIUDAD, CODIGO_POSTAL, EMAIL, NOMBRE, PAIS, PROVINCIA_ESTADO, TELEFONO_CELULAR, TELEFONO_FIJO, URBANIZACION) VALUES
+(TRUE, 'García Pérez', 'V-12345678', 'Caracas', '1010', 'm.garcia@email.com', 'María Elena', 'Venezuela', 'Distrito Capital', '04141234567', '02129876543', 'Las Mercedes'),
+(TRUE, 'Rodríguez Silva', 'V-18765432', 'Valencia', '2001', 'carlos.rodriguez@email.com', 'Carlos Eduardo', 'Venezuela', 'Carabobo', '04245678901', '02418234567', 'El Trigal'),
+(TRUE, 'Fernández López', 'V-14567890', 'Barquisimeto', '3001', 'ana.fernandez@email.com', 'Ana Sofía', 'Venezuela', 'Lara', '04123456789', '02512534567', 'Nueva Segovia'),
+(TRUE, 'Martínez Castro', 'V-19876543', 'Maracaibo', '4001', 'luis.martinez@email.com', 'Luis Alberto', 'Venezuela', 'Zulia', '04167890123', '02617894561', 'Bella Vista'),
+(TRUE, 'Gómez Hernández', 'V-11223344', 'Maracay', '2101', 'patricia.gomez@email.com', 'Patricia', 'Venezuela', 'Aragua', '04149876543', '02432345678', 'Base Aragua'),
+(TRUE, 'Pérez Morales', 'V-16543210', 'Mérida', '5101', 'jorge.perez@email.com', 'Jorge Antonio', 'Venezuela', 'Mérida', '04261234567', '02742445566', 'La Parroquia'),
+(TRUE, 'Sánchez Torres', 'V-20123456', 'San Cristóbal', '5001', 'andrea.sanchez@email.com', 'Andrea', 'Venezuela', 'Táchira', '04147654321', '02763432100', 'Pueblo Nuevo'),
+(TRUE, 'Díaz Romero', 'V-15987654', 'Puerto La Cruz', '6023', 'roberto.diaz@email.com', 'Roberto José', 'Venezuela', 'Anzoátegui', '04248765432', '02812678901', 'Lechería'),
+(TRUE, 'Álvarez Mendoza', 'V-13456789', 'Maturín', '6201', 'gabriela.alvarez@email.com', 'Gabriela', 'Venezuela', 'Monagas', '04129876543', '02916421122', 'Tipuro'),
+(TRUE, 'Torres Ruiz', 'V-17890123', 'Barinas', '5201', 'daniel.torres@email.com', 'Daniel Alejandro', 'Venezuela', 'Barinas', '04161234567', '02735321144', 'Alto Barinas'),
+(TRUE, 'Ramírez Flores', 'E-82123456', 'Caracas', '1060', 'john.smith@email.com', 'John', 'Venezuela', 'Distrito Capital', '04141112233', '02122854321', 'Los Palos Grandes'),
+(TRUE, 'Benítez Vargas', 'V-21345678', 'Ciudad Guayana', '8015', 'sofia.benitez@email.com', 'Sofía Victoria', 'Venezuela', 'Bolívar', '04249012345', '02869234567', 'Alta Vista'),
+(TRUE, 'Vargas Medina', 'V-10987654', 'Punto Fijo', '4102', 'manuel.vargas@email.com', 'Manuel Enrique', 'Venezuela', 'Falcón', '04123334455', '02692468013', 'Puerta Maraven'),
+(TRUE, 'Castillo Gutiérrez', 'V-22456789', 'Los Teques', '1201', 'valentina.castillo@email.com', 'Valentina', 'Venezuela', 'Miranda', '04145556677', '02123214567', 'San Antonio'),
+(TRUE, 'Rojas Navarro', 'V-16789012', 'Acarigua', '3301', 'fernando.rojas@email.com', 'Fernando', 'Venezuela', 'Portuguesa', '04247778899', '02556213456', 'Araure'),
+(TRUE, 'Mendoza Acosta', 'V-19012345', 'Cumaná', '6101', 'camila.mendoza@email.com', 'Camila Isabel', 'Venezuela', 'Sucre', '04168889900', '02934312233', 'San Gonzalo'),
+(TRUE, 'Silva Reyes', 'E-84567890', 'Caracas', '1080', 'pierre.dubois@email.com', 'Pierre', 'Venezuela', 'Distrito Capital', '04124445566', '02129912233', 'La Castellana'),
+(TRUE, 'Guerrero Parra', 'V-15432109', 'Margarita', '6301', 'diego.guerrero@email.com', 'Diego Armando', 'Venezuela', 'Nueva Esparta', '04146667788', '02952623344', 'Pampaatar'),
+(TRUE, 'Ortiz Molina', 'V-23123456', 'San Felipe', '3201', 'natalia.ortiz@email.com', 'Natalia', 'Venezuela', 'Yaracuy', '04242223344', '02542314455', 'Independencia'),
+(TRUE, 'Delgado Rivas', 'J-301234560', 'Valencia', '2003', 'contacto@delgadorivas.com', 'Corporación Delgado', 'Venezuela', 'Carabobo', '04121110099', '02418520011', 'Zona Industrial');

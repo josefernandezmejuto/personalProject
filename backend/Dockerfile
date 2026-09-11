@@ -135,3 +135,9 @@ ENV JAVA_APP_JAR="/deployments/application.jar"
 # 16. Ejecutar Spring Boot
 # ----------------------------------------------------------
 ENTRYPOINT ["/opt/jboss/container/java/run/run-java.sh"]
+
+# cd ~/Documents/VisualStudioCode/personalProject/backend
+# docker stop backend-springboot
+# docker rm backend-springboot
+# docker build -t backend-springboot:1.0 .
+# docker run -d --name backend-springboot -p 8080:8080 -e SPRING_H2_CONSOLE_ENABLED=true -e SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS=true backend-springboot:1.0
