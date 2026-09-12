@@ -1,0 +1,37 @@
+GENERAL APPLICATION LICENSE NOTICE
+
+Copyright (c) 2026 Jose Fernandez Mejuto.
+All rights reserved.
+
+This software and the associated container image are provided for internal,
+development, testing, demonstration, and evaluation purposes unless otherwise
+agreed in writing.
+
+The software may include third-party components, libraries, frameworks, and
+container base images that are subject to their own licenses, terms, and
+conditions. Those third-party licenses remain applicable and are not replaced
+by this notice.
+
+The Red Hat Universal Base Image (UBI), NGINX, Node.js, Angular, and any other
+third-party software included in or used to build this container image are
+distributed under their respective licenses.
+
+Unless expressly authorized in writing, this software may not be sold,
+redistributed, sublicensed, or used for commercial production purposes outside
+the scope authorized by the software owner.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For questions regarding licensing or permitted use, contact the software owner
+or maintainer.
+
+NOTE:
+This is a generic placeholder license notice intended for development and
+container-image packaging purposes. It should be reviewed and replaced or
+adapted before production use, redistribution, or formal certification.

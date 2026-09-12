@@ -200,7 +200,7 @@ export class PersonaComponent implements OnInit, AfterViewInit {
       telefonoFijo: ['+58212', [Validators.required, Validators.pattern(/^\+58(212)\d{7}$/)]],
       telefonoCelular: [
         '+584',
-        [Validators.required, Validators.pattern(/^\+58(412|416|424|426)\d{7}$/)],
+        [Validators.required, Validators.pattern(/^\+58(414|412|416|424|426)\d{7}$/)],
       ],
       activo: [true],
       direccion: this.fb.group({

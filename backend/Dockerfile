@@ -5,58 +5,60 @@ FROM registry.access.redhat.com/ubi9/openjdk-21 AS builder
 
 
 # ----------------------------------------------------------
-# 1. Actualizaciones de seguridad
+# Actualizaciones de seguridad
 # ----------------------------------------------------------
-USER root
+USER 0
 
 RUN microdnf -y update && \
     microdnf clean all
 
 
 # ----------------------------------------------------------
-# 2. Directorio de trabajo
+# Preparar directorio para usuario no privilegiado
+# ----------------------------------------------------------
+RUN mkdir -p /home/jboss/project && \
+    chown -R 185:0 /home/jboss/project && \
+    chmod -R g=u /home/jboss/project
+
+USER 185
+
+# ----------------------------------------------------------
+# Directorio de trabajo
 # ----------------------------------------------------------
 WORKDIR /home/jboss/project
 
+# ----------------------------------------------------------
+# Copiar POM primero para aprovechar cache
+# ----------------------------------------------------------
+COPY --chown=185:0 pom.xml ./
 
 # ----------------------------------------------------------
-# 3. Copiar primero el POM
-#    Esto permite aprovechar la cache de Docker
-# ----------------------------------------------------------
-COPY pom.xml ./
-
-
-# ----------------------------------------------------------
-# 4. Descargar dependencias Maven
+# Descargar dependencias
 # ----------------------------------------------------------
 RUN mvn dependency:go-offline -B
 
-
 # ----------------------------------------------------------
-# 5. Copiar código fuente
+# Copiar código fuente
 # ----------------------------------------------------------
-COPY src ./src
-
-
-# ----------------------------------------------------------
-# 6. Compilar Spring Boot
-# ----------------------------------------------------------
-RUN mvn clean package -DskipTests -B
+COPY --chown=185:0 src ./src
 
 
 # ----------------------------------------------------------
-# 7. Identificar el JAR generado y darle nombre conocido
+# Compilar Spring Boot y obtener JAR ejecutable
 # ----------------------------------------------------------
-RUN JAR_FILE=$(find target \
+RUN mvn clean package -DskipTests -B && \
+    JAR_FILE=$(find target \
         -maxdepth 1 \
         -type f \
         -name "*.jar" \
         ! -name "*.original" \
-        | head -n 1) && \
+        ! -name "*-sources.jar" \
+        ! -name "*-javadoc.jar" \
+        ! -name "*-plain.jar" \
+        -print -quit) && \
     echo "JAR generado: ${JAR_FILE}" && \
     test -n "${JAR_FILE}" && \
     cp "${JAR_FILE}" /tmp/application.jar
-
 
 
 # ==========================================================
@@ -66,73 +68,61 @@ FROM registry.access.redhat.com/ubi9/openjdk-21-runtime
 
 
 # ----------------------------------------------------------
-# 8. LABELS
+# Metadata
 # ----------------------------------------------------------
+ARG APP_VERSION="1.0.0"
+ARG APP_RELEASE="1"
+
 LABEL name="personalproject/backend-springboot" \
+      maintainer="Jose Fernandez Mejuto" \
       vendor="Jose Fernandez Mejuto" \
-      version="1.0.0" \
-      release="1" \
+      version="${APP_VERSION}" \
+      release="${APP_RELEASE}" \
       summary="Spring Boot backend application" \
       description="Spring Boot REST backend running on Red Hat UBI 9 with OpenJDK 21."
 
 LABEL org.opencontainers.image.title="Spring Boot Backend" \
       org.opencontainers.image.description="Spring Boot REST backend running on Red Hat UBI 9 with OpenJDK 21" \
-      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.version="${APP_VERSION}" \
       org.opencontainers.image.vendor="Jose Fernandez Mejuto"
 
-
 # ----------------------------------------------------------
-# 9. Actualizaciones de seguridad de la imagen FINAL
+# Actualizaciones de seguridad de la imagen FINAL
 # ----------------------------------------------------------
-USER root
+USER 0
 
 RUN microdnf -y update && \
     microdnf clean all
 
+# ----------------------------------------------------------
+# Licencias
+# ----------------------------------------------------------
+COPY --chown=185:0 licenses/ /licenses/
 
 # ----------------------------------------------------------
-# 10. Crear directorio de despliegue
-# ----------------------------------------------------------
-RUN mkdir -p /deployments
-
-
-# ----------------------------------------------------------
-# 11. Copiar únicamente el JAR generado en el builder
+# Copiar únicamente artefacto ejecutable
 # ----------------------------------------------------------
 COPY --from=builder --chown=185:0 \
      /tmp/application.jar \
      /deployments/application.jar
 
-
 # ----------------------------------------------------------
-# 12. Group ownership y permisos OpenShift
-# ----------------------------------------------------------
-RUN chgrp -R 0 /deployments && \
-    chmod -R g=u /deployments
-
-
-# ----------------------------------------------------------
-# 13. Usuario no privilegiado
+# Usuario no privilegiado
 # ----------------------------------------------------------
 USER 185
 
-
 # ----------------------------------------------------------
-# 14. Puerto Spring Boot
-# application.properties:
-# server.port=8080
+# Puerto Spring Boot
 # ----------------------------------------------------------
 EXPOSE 8080
 
-
 # ----------------------------------------------------------
-# 15. Configuración de la aplicación Java
+# Runtime Red Hat OpenJDK
 # ----------------------------------------------------------
 ENV JAVA_APP_JAR="/deployments/application.jar"
 
-
 # ----------------------------------------------------------
-# 16. Ejecutar Spring Boot
+# Ejecutar Spring Boot
 # ----------------------------------------------------------
 ENTRYPOINT ["/opt/jboss/container/java/run/run-java.sh"]
 

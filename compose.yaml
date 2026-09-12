@@ -1,0 +1,67 @@
+name: personalproject
+
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    image: frontend-angular:1.0
+
+    ports:
+      - "127.0.0.1:4200:8080"
+
+    networks:
+      - personal-network
+
+    restart: unless-stopped
+
+    init: true
+
+    security_opt:
+      - no-new-privileges:true
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    image: backend-springboot:1.0
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    environment:
+      SPRING_H2_CONSOLE_ENABLED: "true"
+      SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+
+    networks:
+      - personal-network
+
+    restart: unless-stopped
+
+    init: true
+
+    security_opt:
+      - no-new-privileges:true
+
+    stop_grace_period: 30s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+networks:
+  personal-network:
+    driver: bridge
