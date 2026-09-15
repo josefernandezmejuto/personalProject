@@ -38,8 +38,8 @@ export class FacturaService {
         const listaActual = this.facturasSubject.getValue();
         const listaActualizada: Factura[] = listaActual.map(f => {
           if (f.id === id) {
-            // 🟢 CASTEO ESTRICTO: 'Anulada' as const respeta el tipo de la interfaz Factura
-            return { ...f, estado: 'Anulada' as const };
+            // 🟢 CASTEO ESTRICTO: 'ANULADA' as const respeta el tipo de la interfaz Factura
+            return { ...f, estado: 'ANULADA' as const };
           }
           return f;
         });

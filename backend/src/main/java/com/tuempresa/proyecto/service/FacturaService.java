@@ -27,8 +27,8 @@ public class FacturaService {
     private final ArticuloRepository articuloRepository;
 
     public FacturaService(FacturaRepository facturaRepository,
-                          PersonaRepository personaRepository,
-                          ArticuloRepository articuloRepository) {
+            PersonaRepository personaRepository,
+            ArticuloRepository articuloRepository) {
         this.facturaRepository = facturaRepository;
         this.personaRepository = personaRepository;
         this.articuloRepository = articuloRepository;
@@ -61,9 +61,21 @@ public class FacturaService {
         factura.setNumeroFactura(generarSiguienteNumero());
         factura.setFechaEmision(LocalDateTime.now());
         factura.setCliente(cliente);
+
+        boolean prontoPagoActivo = Boolean.TRUE.equals(dto.getAplicaProntoPago());
+        factura.setAplicaProntoPago(prontoPagoActivo);
+        factura.setPorcentajeProntoPago(
+                prontoPagoActivo ? (dto.getPorcentajeProntoPago() != null ? dto.getPorcentajeProntoPago() : 5.0) : 0.0);
+
+        // 🟢 ESTADO DINÁMICO: "Pagada" si aplica Pronto Pago, "Pendiente" si no.
+        if (dto.getEstado() != null && !dto.getEstado().trim().isEmpty()) {
+            factura.setEstado(dto.getEstado());
+        } else {
+            factura.setEstado(prontoPagoActivo ? "PAGADA" : "PENDIENTE");
+        }
+
         factura.setAplicaProntoPago(dto.getAplicaProntoPago() != null ? dto.getAplicaProntoPago() : false);
         factura.setPorcentajeProntoPago(dto.getPorcentajeProntoPago() != null ? dto.getPorcentajeProntoPago() : 5.0);
-        factura.setEstado("Pagada");
 
         BigDecimal acumuladoSubtotal = BigDecimal.ZERO;
         BigDecimal acumuladoDescuento = BigDecimal.ZERO;
@@ -84,10 +96,11 @@ public class FacturaService {
             detalle.setArticulo(articulo);
             detalle.setCantidad(dDto.getCantidad());
             detalle.setPrecioUnitario(articulo.getPrecioUnitario());
-            
-            String desc = (dDto.getDescripcionPersonalizada() != null && !dDto.getDescripcionPersonalizada().trim().isEmpty())
-                    ? dDto.getDescripcionPersonalizada().trim()
-                    : articulo.getDescripcion();
+
+            String desc = (dDto.getDescripcionPersonalizada() != null
+                    && !dDto.getDescripcionPersonalizada().trim().isEmpty())
+                            ? dDto.getDescripcionPersonalizada().trim()
+                            : articulo.getDescripcion();
             detalle.setDescripcionPersonalizada(desc);
 
             double pctDesc = (dDto.getDescuento() != null) ? dDto.getDescuento() : articulo.getDescuento();
@@ -132,7 +145,7 @@ public class FacturaService {
         Factura factura = facturaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Factura no encontrada con ID: " + id));
 
-        if ("Anulada".equals(factura.getEstado())) {
+        if ("ANULADA".equals(factura.getEstado())) {
             throw new RuntimeException("La factura ya se encuentra anulada.");
         }
 

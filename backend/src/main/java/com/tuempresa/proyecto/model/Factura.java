@@ -47,7 +47,7 @@ public class Factura {
     private BigDecimal total = BigDecimal.ZERO;
 
     @Column(nullable = false)
-    private String estado = "Pagada"; // Pagada, Anulada
+    private String estado = "PAGADA"; // Pagada, Anulada
 
     public Factura() {}
 

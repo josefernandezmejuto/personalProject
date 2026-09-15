@@ -22,6 +22,8 @@ export class FacturaComponent implements OnInit, AfterViewInit {
   // 🟢 Capturas de elementos del DOM según el patrón estandarizado
   @ViewChild('campoFocus') campoFocusInput!: ElementRef<HTMLInputElement | HTMLSelectElement>;
   @ViewChild('articuloSelect') articuloSelectInput!: ElementRef<HTMLInputElement | HTMLSelectElement>;
+  @ViewChild('cantidadInput') cantidadInput!: ElementRef<HTMLInputElement>;
+
 
   // Listas generales
   listaFacturas: Factura[] = [];
@@ -185,9 +187,18 @@ export class FacturaComponent implements OnInit, AfterViewInit {
       );
     });
 
+
     if (articuloEncontrado) {
       this.articuloSeleccionadoId = articuloEncontrado.id!;
       this.descripcionLinea = articuloEncontrado.descripcion;
+
+      // 🟢 SALTO AUTOMÁTICO DE CURSOR AL CAMPO CANTIDAD
+      setTimeout(() => {
+        if (this.cantidadInput) {
+          this.cantidadInput.nativeElement.focus();
+          this.cantidadInput.nativeElement.select(); // Selecciona el "1" para reemplazarlo rápido al escribir
+        }
+      }, 50);
     } else {
       this.articuloSeleccionadoId = null;
       this.descripcionLinea = '';
@@ -275,6 +286,8 @@ export class FacturaComponent implements OnInit, AfterViewInit {
     const cliente = this.listaClientes.find((c: Persona) => c.id === clienteIdSeleccionado);
     if (!cliente) return;
 
+    // 🟢 ESTADO DINÁMICO SEGÚN PRONTO PAGO
+    const estadoFactura = this.aplicaProntoPago ? ('PAGADA' as const) : ('PENDIENTE' as const);
     // 🟢 ESTRUCTURA ALINEADA CON FacturaDTO DE SPRING BOOT
     const nuevaFactura = {
       numeroFactura: this.facturaService.generarNumeroFactura(),
@@ -300,7 +313,7 @@ export class FacturaComponent implements OnInit, AfterViewInit {
 
       montoIva: this.montoIva,
       total: this.total,
-      estado: 'Pagada' as const
+      estado: estadoFactura
     };
 
 

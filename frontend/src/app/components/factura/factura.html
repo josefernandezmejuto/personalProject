@@ -90,7 +90,9 @@
               [(ngModel)]="descripcionLinea"
               placeholder="Descripción del ítem"
               [ngModelOptions]="{ standalone: true }"
-              class="form-control"
+              class="form-control bg-light"
+              readonly
+              tabIndex="-1"
             />
           </div>
 
@@ -98,6 +100,7 @@
           <div class="col-md-2">
             <label class="form-label mb-1">Cantidad *</label>
             <input
+              #cantidadInput
               type="number"
               min="1"
               [(ngModel)]="cantidadArticulo"
@@ -254,7 +257,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let f of listaFacturas" [class.row-disabled]="f.estado === 'Anulada'">
+          <tr *ngFor="let f of listaFacturas" [class.row-disabled]="f.estado === 'ANULADA'">
             <td>
               <strong>{{ f.numeroFactura }}</strong>
             </td>
@@ -270,9 +273,9 @@
               <span
                 class="badge"
                 [ngClass]="{
-                  'badge-success': f.estado === 'Pagada',
-                  'badge-danger': f.estado === 'Anulada',
-                  'badge-warning': f.estado !== 'Pagada' && f.estado !== 'Anulada',
+                  'badge-success': f.estado === 'PAGADA',
+                  'badge-danger': f.estado === 'ANULADA',
+                  'badge-warning': f.estado !== 'PAGADA' && f.estado !== 'ANULADA',
                 }"
               >
                 {{ f.estado }}
@@ -281,7 +284,7 @@
             <td style="text-align: center">
               <button
                 (click)="anularFactura(f.id!)"
-                *ngIf="f.estado !== 'Anulada'"
+                *ngIf="f.estado !== 'ANULADA'"
                 class="btn btn-danger btn-sm"
               >
                 Anular

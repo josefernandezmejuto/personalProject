@@ -1,0 +1,62 @@
+services:
+
+  frontend:
+    image: registry.access.redhat.com/ubi9/nodejs-22
+
+    working_dir: /opt/app-root/src
+
+    # SOLO PARA DESARROLLO LOCAL
+    user: "0"
+
+    volumes:
+      - ./frontend:/opt/app-root/src
+      - frontend_node_modules:/opt/app-root/src/node_modules
+      - frontend_angular_cache:/opt/app-root/src/.angular
+
+    ports:
+      - "4200:4200"
+
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+
+    command: >
+      sh -c "
+        npm ci &&
+        npm start -- --host 0.0.0.0 --poll 1000
+      "
+
+    networks:
+      - personal-network
+
+    # En desarrollo prefiero NO reiniciarlo en bucle
+    restart: "no"
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    image: backend-springboot:1.0
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_H2_CONSOLE_ENABLED: "true"
+      SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+
+    networks:
+      - personal-network
+
+    restart: unless-stopped
+
+
+volumes:
+  frontend_node_modules:
+  frontend_angular_cache:
+
+
+networks:
+  personal-network:
+    driver: bridge

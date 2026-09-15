@@ -21,5 +21,5 @@ export interface Factura {
   montoProntoPago: number;         // 🆕 Monto descontado por pronto pago
   montoIva: number;
   total: number;
-  estado: 'Pendiente' | 'Pagada' | 'Anulada';
+  estado: 'PENDIENTE' | 'PAGADA' | 'ANULADA';
 }

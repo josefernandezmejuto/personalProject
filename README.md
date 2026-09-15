@@ -124,7 +124,7 @@ spring.datasource.url=jdbc:h2:file:./data/proyectodb
 
 ```
 
-
+jdbc:h2:mem:enterprisedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 
 
 
